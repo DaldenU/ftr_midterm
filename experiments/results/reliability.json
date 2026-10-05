@@ -1,0 +1,154 @@
+{
+  "baseline": {
+    "mode": "baseline",
+    "observation_s": 240.0,
+    "component": {
+      "instances": 3,
+      "failures_injected": 31,
+      "MTTF_component_s": 12.60783870967742,
+      "MTTR_component_s": 10.617967741935484,
+      "failure_rate_component_per_s": 0.07931573547434648,
+      "injected_mttf_s": 15.0,
+      "availability_component_theory": 0.5428375
+    },
+    "services": {
+      "student": {
+        "replicas": 1,
+        "failures": 9,
+        "downtime_s": 94.77,
+        "uptime_s": 145.23,
+        "MTTF_s": 16.13666666666667,
+        "MTTR_s": 10.53,
+        "MTBF_s": 26.666666666666668,
+        "failure_rate_per_s": 0.06197066721751703,
+        "availability_observed": 0.605125,
+        "availability_theory_ideal_redundancy": 0.5428375
+      },
+      "payment": {
+        "replicas": 1,
+        "failures": 13,
+        "downtime_s": 138.04,
+        "uptime_s": 101.96,
+        "MTTF_s": 7.8430769230769215,
+        "MTTR_s": 10.61846153846154,
+        "MTBF_s": 18.46153846153846,
+        "failure_rate_per_s": 0.12750098077677524,
+        "availability_observed": 0.42483333333333323,
+        "availability_theory_ideal_redundancy": 0.5428375
+      },
+      "academic": {
+        "replicas": 1,
+        "failures": 11,
+        "downtime_s": 148.17,
+        "uptime_s": 91.83,
+        "MTTF_s": 8.34818181818182,
+        "MTTR_s": 13.469999999999999,
+        "MTBF_s": 21.818181818181817,
+        "failure_rate_per_s": 0.11978656212566698,
+        "availability_observed": 0.38262500000000005,
+        "availability_theory_ideal_redundancy": 0.5428375
+      }
+    },
+    "system_any_service_down": {
+      "failures": 10,
+      "downtime_s": 205.01,
+      "MTTF_s": 3.498999999999998,
+      "MTTR_s": 20.501,
+      "MTBF_s": 24.0,
+      "availability_observed": 0.1457916666666666
+    },
+    "system_theory_series_of_3_services": 0.15995931112399023,
+    "requests": {
+      "total": 4800,
+      "success": 2447,
+      "failed": 2353,
+      "error_rate": 0.4902,
+      "shed": 0,
+      "hard_failed": 2353,
+      "hard_error_rate": 0.4902,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 11.8,
+      "p95_ms": 41.5,
+      "p99_ms": 49.1,
+      "p95_all_ms": 25.2
+    }
+  },
+  "ft": {
+    "mode": "ft",
+    "observation_s": 240.0,
+    "component": {
+      "instances": 6,
+      "failures_injected": 95,
+      "MTTF_component_s": 13.4372,
+      "MTTR_component_s": 1.7206947368421053,
+      "failure_rate_component_per_s": 0.07442026612687166,
+      "injected_mttf_s": 15.0,
+      "availability_component_theory": 0.8864819444444444
+    },
+    "services": {
+      "student": {
+        "replicas": 2,
+        "failures": 7,
+        "downtime_s": 5.62,
+        "uptime_s": 234.38,
+        "MTTF_s": 33.48285714285714,
+        "MTTR_s": 0.8028571428571455,
+        "MTBF_s": 34.285714285714285,
+        "failure_rate_per_s": 0.029866029524703474,
+        "availability_observed": 0.9765833333333334,
+        "availability_theory_ideal_redundancy": 0.9871136510628858
+      },
+      "payment": {
+        "replicas": 2,
+        "failures": 5,
+        "downtime_s": 3.61,
+        "uptime_s": 236.39,
+        "MTTF_s": 47.278000000000006,
+        "MTTR_s": 0.7219999999999942,
+        "MTBF_s": 48.0,
+        "failure_rate_per_s": 0.021151486949532547,
+        "availability_observed": 0.9849583333333335,
+        "availability_theory_ideal_redundancy": 0.9871136510628858
+      },
+      "academic": {
+        "replicas": 2,
+        "failures": 3,
+        "downtime_s": 2.51,
+        "uptime_s": 237.49,
+        "MTTF_s": 79.16333333333334,
+        "MTTR_s": 0.8366666666666637,
+        "MTBF_s": 80.0,
+        "failure_rate_per_s": 0.012632110825718978,
+        "availability_observed": 0.9895416666666667,
+        "availability_theory_ideal_redundancy": 0.9871136510628858
+      }
+    },
+    "system_any_service_down": {
+      "failures": 15,
+      "downtime_s": 11.74,
+      "MTTF_s": 15.217333333333334,
+      "MTTR_s": 0.7826666666666654,
+      "MTBF_s": 16.0,
+      "availability_observed": 0.9510833333333334
+    },
+    "system_theory_series_of_3_services": 0.9618369872742556,
+    "requests": {
+      "total": 4800,
+      "success": 4703,
+      "failed": 97,
+      "error_rate": 0.0202,
+      "shed": 0,
+      "hard_failed": 97,
+      "hard_error_rate": 0.0202,
+      "recovered": 200,
+      "degraded": 105,
+      "replays": 0,
+      "p50_ms": 7.2,
+      "p95_ms": 41.6,
+      "p99_ms": 149.5,
+      "p95_all_ms": 41.4
+    }
+  }
+}

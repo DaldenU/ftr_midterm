@@ -1,0 +1,139 @@
+{
+  "experiment_id": "S5-baseline-r2-20261004T100323Z",
+  "scenario": "S5",
+  "repetition": 2,
+  "datetime": "2026-10-04T10:03:25+00:00",
+  "system_version": "baseline-1.0",
+  "mode": "baseline",
+  "failure_injected": "Interrupted transactions: payment interrupted after first write (30%), grade batch interrupted mid-way (30%), double-submitted payments (20%), abandoned payments",
+  "initial_state": {
+    "replicas_per_service": 1,
+    "db": "up",
+    "payments_planned": 60,
+    "batches_planned": 20
+  },
+  "failure_start": 1791108205.487,
+  "failure_start_rel_s": 0.01,
+  "detection_time_s": 0.431,
+  "detection_monitor_s": null,
+  "detection_internal_s": null,
+  "detection_client_s": 0.431,
+  "recovery_start": 1791108205.487,
+  "recovery_end": 1791108209.94,
+  "recovery_duration_s": 4.454,
+  "repair_action_s": 4.454,
+  "total_requests": 110,
+  "successful_requests": 91,
+  "failed_requests": 19,
+  "shed_requests": 0,
+  "hard_failed_requests": 19,
+  "recovered_requests": 30,
+  "degraded_requests": 0,
+  "duplicate_requests": 30,
+  "duplicates_prevented": 0,
+  "window_total": 110,
+  "window_failed": 19,
+  "window_success": 91,
+  "window_error_rate": 0.1727,
+  "user_visible_downtime_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "probe_availability_strict": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "probe_availability_lenient": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "latency": {
+    "p50_ms": 61.8,
+    "p95_ms": 481.4,
+    "p99_ms": 516.0
+  },
+  "per_op": {
+    "post_batch": {
+      "total": 23,
+      "success": 20,
+      "failed": 3,
+      "error_rate": 0.1304,
+      "shed": 0,
+      "hard_failed": 3,
+      "hard_error_rate": 0.1304,
+      "recovered": 3,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 19.9,
+      "p95_ms": 335.4,
+      "p99_ms": 341.0,
+      "p95_all_ms": 333.1
+    },
+    "post_payment": {
+      "total": 87,
+      "success": 71,
+      "failed": 16,
+      "error_rate": 0.1839,
+      "shed": 0,
+      "hard_failed": 16,
+      "hard_error_rate": 0.1839,
+      "recovered": 27,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 74.6,
+      "p95_ms": 494.7,
+      "p99_ms": 519.8,
+      "p95_all_ms": 486.7
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 27,
+    "ledger_mismatch_students": 15,
+    "ledger_mismatch_amount": 16000.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 87,
+    "duplicate_academic_records": 6,
+    "academic_records": 106,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 3,
+    "missing_batches": 0,
+    "violations": {
+      "duplicate_payments": 27,
+      "ledger_mismatch_students": 15,
+      "duplicate_academic_records": 6,
+      "batches_with_duplicates": 3
+    },
+    "consistent": false
+  },
+  "consistent": false,
+  "stack_events": [],
+  "observations": [
+    "Baseline commits payment row and ledger update separately and has no idempotency check: an interruption corrupts the ledger and the client's retry creates a second payment."
+  ],
+  "logical_payments_planned": 60,
+  "logical_payments_acknowledged": 56,
+  "logical_batches_planned": 20,
+  "logical_batches_acknowledged": 20,
+  "interrupted_payments": 16,
+  "abandoned_payments": 4,
+  "double_submitted_payments": 15,
+  "interrupted_batches": 3,
+  "retry_recoveries_measured": 15,
+  "mean_client_recovery_s": 0.666,
+  "p95_client_recovery_s": 0.781,
+  "db_rollbacks": {
+    "avg_age_at_rollback_s": null,
+    "count": 0
+  }
+}

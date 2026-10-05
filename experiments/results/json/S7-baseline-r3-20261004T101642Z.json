@@ -1,0 +1,171 @@
+{
+  "experiment_id": "S7-baseline-r3-20261004T101642Z",
+  "scenario": "S7",
+  "repetition": 3,
+  "datetime": "2026-10-04T10:16:45+00:00",
+  "system_version": "baseline-1.0",
+  "mode": "baseline",
+  "failure_injected": "Permanent loss of the primary database host (SIGKILL + data directory deleted)",
+  "initial_state": {
+    "replicas_per_service": 1,
+    "db": "primary + nightly-style backup"
+  },
+  "failure_start": 1791109013.301,
+  "failure_start_rel_s": 8.2,
+  "detection_time_s": 0.008,
+  "detection_monitor_s": 0.026,
+  "detection_internal_s": null,
+  "detection_client_s": 0.008,
+  "recovery_start": 1791109033.568,
+  "recovery_end": 1791109034.653,
+  "recovery_duration_s": 21.351,
+  "repair_action_s": 1.085,
+  "total_requests": 1920,
+  "successful_requests": 1068,
+  "failed_requests": 852,
+  "shed_requests": 0,
+  "hard_failed_requests": 852,
+  "recovered_requests": 0,
+  "degraded_requests": 0,
+  "duplicate_requests": 0,
+  "duplicates_prevented": 0,
+  "window_total": 854,
+  "window_failed": 851,
+  "window_success": 3,
+  "window_error_rate": 0.9965,
+  "user_visible_downtime_s": {
+    "student": 21.24,
+    "payment": 21.33,
+    "academic": 21.23
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 21.24,
+    "payment": 21.33,
+    "academic": 21.23
+  },
+  "probe_availability_strict": {
+    "student": 0.4673,
+    "payment": 0.4675,
+    "academic": 0.4687
+  },
+  "probe_availability_lenient": {
+    "student": 0.4673,
+    "payment": 0.4675,
+    "academic": 0.4687
+  },
+  "latency": {
+    "p50_ms": 15.5,
+    "p95_ms": 49.0,
+    "p99_ms": 70.3
+  },
+  "per_op": {
+    "get_account": {
+      "total": 94,
+      "success": 49,
+      "failed": 45,
+      "error_rate": 0.4787,
+      "shed": 0,
+      "hard_failed": 45,
+      "hard_error_rate": 0.4787,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 12.4,
+      "p95_ms": 18.2,
+      "p99_ms": 19.1,
+      "p95_all_ms": 17.8
+    },
+    "get_student": {
+      "total": 878,
+      "success": 479,
+      "failed": 399,
+      "error_rate": 0.4544,
+      "shed": 0,
+      "hard_failed": 399,
+      "hard_error_rate": 0.4544,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 11.9,
+      "p95_ms": 22.3,
+      "p99_ms": 87.7,
+      "p95_all_ms": 19.5
+    },
+    "get_transcript": {
+      "total": 387,
+      "success": 221,
+      "failed": 166,
+      "error_rate": 0.4289,
+      "shed": 0,
+      "hard_failed": 166,
+      "hard_error_rate": 0.4289,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 21.1,
+      "p95_ms": 38.1,
+      "p99_ms": 241.0,
+      "p95_all_ms": 33.5
+    },
+    "post_grade": {
+      "total": 293,
+      "success": 163,
+      "failed": 130,
+      "error_rate": 0.4437,
+      "shed": 0,
+      "hard_failed": 130,
+      "hard_error_rate": 0.4437,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 13.4,
+      "p95_ms": 23.7,
+      "p99_ms": 29.3,
+      "p95_all_ms": 19.6
+    },
+    "post_payment": {
+      "total": 268,
+      "success": 156,
+      "failed": 112,
+      "error_rate": 0.4179,
+      "shed": 0,
+      "hard_failed": 112,
+      "hard_error_rate": 0.4179,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 45.6,
+      "p95_ms": 57.2,
+      "p99_ms": 68.4,
+      "p95_all_ms": 55.9
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 0,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 115,
+    "duplicate_academic_records": 0,
+    "academic_records": 105,
+    "lost_acknowledged_payments": 41,
+    "lost_acknowledged_grades": 58,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "violations": {
+      "lost_acknowledged_payments": 41,
+      "lost_acknowledged_grades": 58
+    },
+    "consistent": false
+  },
+  "consistent": false,
+  "stack_events": [],
+  "observations": [
+    "Backup-only strategy: pg_dump taken at start of the run; everything written afterwards is at risk."
+  ],
+  "db_available_again_s": 21.28,
+  "operator_delay_s": 20.0,
+  "rpo_lost_acknowledged_writes": 99
+}

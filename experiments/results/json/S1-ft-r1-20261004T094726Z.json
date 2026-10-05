@@ -1,0 +1,188 @@
+{
+  "experiment_id": "S1-ft-r1-20261004T094726Z",
+  "scenario": "S1",
+  "repetition": 1,
+  "datetime": "2026-10-04T09:47:29+00:00",
+  "system_version": "fault-tolerant-1.0",
+  "mode": "ft",
+  "failure_injected": "SIGKILL of application instance payment-1",
+  "initial_state": {
+    "replicas_per_service": 2,
+    "db": "up",
+    "note": "steady 40 req/s mixed workload"
+  },
+  "failure_start": 1791107257.782,
+  "failure_start_rel_s": 8.01,
+  "detection_time_s": 0.073,
+  "detection_monitor_s": 0.073,
+  "detection_internal_s": 0.106,
+  "detection_client_s": null,
+  "recovery_start": 1791107258.798,
+  "recovery_end": 1791107259.89,
+  "recovery_duration_s": 2.109,
+  "repair_action_s": 1.092,
+  "total_requests": 1280,
+  "successful_requests": 1280,
+  "failed_requests": 0,
+  "shed_requests": 0,
+  "hard_failed_requests": 0,
+  "recovered_requests": 0,
+  "degraded_requests": 0,
+  "duplicate_requests": 0,
+  "duplicates_prevented": 0,
+  "window_total": 84,
+  "window_failed": 0,
+  "window_success": 84,
+  "window_error_rate": 0.0,
+  "user_visible_downtime_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "probe_availability_strict": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "probe_availability_lenient": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "latency": {
+    "p50_ms": 7.8,
+    "p95_ms": 40.3,
+    "p99_ms": 718.4
+  },
+  "per_op": {
+    "get_account": {
+      "total": 71,
+      "success": 71,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 6.0,
+      "p95_ms": 15.4,
+      "p99_ms": 40.4,
+      "p95_all_ms": 15.4
+    },
+    "get_student": {
+      "total": 556,
+      "success": 556,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 6.0,
+      "p95_ms": 20.9,
+      "p99_ms": 735.1,
+      "p95_all_ms": 20.9
+    },
+    "get_transcript": {
+      "total": 260,
+      "success": 260,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 9.5,
+      "p95_ms": 22.6,
+      "p99_ms": 45.8,
+      "p95_all_ms": 22.6
+    },
+    "post_grade": {
+      "total": 199,
+      "success": 199,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 7.1,
+      "p95_ms": 24.4,
+      "p99_ms": 757.3,
+      "p95_all_ms": 24.4
+    },
+    "post_payment": {
+      "total": 194,
+      "success": 194,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 35.9,
+      "p95_ms": 61.9,
+      "p99_ms": 749.7,
+      "p95_all_ms": 61.9
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 0,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 194,
+    "duplicate_academic_records": 0,
+    "academic_records": 199,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "violations": {},
+    "consistent": true
+  },
+  "consistent": true,
+  "stack_events": [
+    {
+      "ts": 1791107257.7817867,
+      "type": "fault_kill_instance",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1791107257.7975037,
+      "type": "supervisor_detected_exit",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1791107258.7979167,
+      "type": "restart_start",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1791107259.6763096,
+      "type": "restart_ready",
+      "name": "payment-1"
+    }
+  ],
+  "observations": [
+    "Gateway ejected the dead replica and routed to payment-2; supervisor restarted payment-1 automatically."
+  ],
+  "operator_delay_s": null
+}

@@ -1,0 +1,120 @@
+# FAULT-TOLERANT deployment: 2 replicas of every service on two logical nodes (labels uni.node=A|B),
+# health-checked load-balancing gateway, auto-restart, monitoring.
+#   docker compose up --build                       # everything
+# Baseline (no fault tolerance):  docker compose -f docker-compose.baseline.yml up --build
+name: uni-ft
+
+x-ft-env: &ft-env
+  FT_MODE: ft
+  DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-uni}:${POSTGRES_PASSWORD:?copy .env.example to .env}@postgres:5432/uni_ft}
+  STUDENT_SERVICE_URLS: http://student-1:8000,http://student-2:8000
+  ENABLE_FAULT_INJECTION: ${ENABLE_FAULT_INJECTION:-1}
+  HTTP_TIMEOUT_S: ${HTTP_TIMEOUT_S:-1.0}
+  RETRY_ATTEMPTS: ${RETRY_ATTEMPTS:-3}
+  DOWNSTREAM_DEADLINE_S: ${DOWNSTREAM_DEADLINE_S:-2.0}
+  BREAKER_FAILURE_THRESHOLD: ${BREAKER_FAILURE_THRESHOLD:-5}
+  BREAKER_RESET_TIMEOUT_S: ${BREAKER_RESET_TIMEOUT_S:-5.0}
+  DB_RETRY_DEADLINE_S: ${DB_RETRY_DEADLINE_S:-6.0}
+  MAX_INFLIGHT: ${MAX_INFLIGHT:-60}
+  DEGRADE_INFLIGHT: ${DEGRADE_INFLIGHT:-30}
+  PAYMENT_LEASE_S: ${PAYMENT_LEASE_S:-1.5}
+  PAYMENT_ROLLBACK_AFTER_S: ${PAYMENT_ROLLBACK_AFTER_S:-6.0}
+
+x-service: &service
+  restart: unless-stopped          # infrastructure self-healing: crashed container is restarted
+  depends_on:
+    postgres: {condition: service_healthy}
+  healthcheck:
+    test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/ready',timeout=1)"]
+    interval: 5s
+    timeout: 2s
+    retries: 3
+    start_period: 10s
+  deploy:
+    resources:
+      limits: {cpus: "0.50", memory: 256M}
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-uni}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env}
+      POSTGRES_DB: uni_ft
+      REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:-replicator-pass}
+    command: ["postgres", "-c", "wal_level=replica", "-c", "max_wal_senders=5", "-c", "max_connections=300"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/primary-init.sh:/docker-entrypoint-initdb.d/00-replication.sh:ro
+      - ./database/schema_ft.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/20-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-uni} -d uni_ft"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  postgres-standby:                 # DB replication (hardware-level redundancy of the data tier)
+    profiles: ["replication"]
+    image: postgres:16
+    restart: unless-stopped
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-uni}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env}
+      REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:-replicator-pass}
+    entrypoint: ["/standby-entrypoint.sh"]
+    volumes:
+      - pgdata-standby:/var/lib/postgresql/data
+      - ./database/standby-entrypoint.sh:/standby-entrypoint.sh:ro
+
+  student-1: {<<: *service, ports: ['8101:8000'], build: {context: ., dockerfile: services/student-service/Dockerfile}, environment: {<<: *ft-env, INSTANCE_ID: student-1}, labels: {uni.node: A}}
+  student-2: {<<: *service, ports: ['8102:8000'], build: {context: ., dockerfile: services/student-service/Dockerfile}, environment: {<<: *ft-env, INSTANCE_ID: student-2}, labels: {uni.node: B}}
+  payment-1: {<<: *service, ports: ['8201:8000'], build: {context: ., dockerfile: services/payment-service/Dockerfile}, environment: {<<: *ft-env, INSTANCE_ID: payment-1}, labels: {uni.node: A}}
+  payment-2: {<<: *service, ports: ['8202:8000'], build: {context: ., dockerfile: services/payment-service/Dockerfile}, environment: {<<: *ft-env, INSTANCE_ID: payment-2}, labels: {uni.node: B}}
+  academic-1: {<<: *service, ports: ['8301:8000'], build: {context: ., dockerfile: services/academic-service/Dockerfile}, environment: {<<: *ft-env, INSTANCE_ID: academic-1}, labels: {uni.node: A}}
+  academic-2: {<<: *service, ports: ['8302:8000'], build: {context: ., dockerfile: services/academic-service/Dockerfile}, environment: {<<: *ft-env, INSTANCE_ID: academic-2}, labels: {uni.node: B}}
+
+  gateway:
+    build: {context: ., dockerfile: gateway/Dockerfile}
+    restart: unless-stopped
+    environment:
+      FT_MODE: ft
+      STUDENT_URLS: http://student-1:8000,http://student-2:8000
+      PAYMENT_URLS: http://payment-1:8000,http://payment-2:8000
+      ACADEMIC_URLS: http://academic-1:8000,http://academic-2:8000
+      ENABLE_FAULT_INJECTION: ${ENABLE_FAULT_INJECTION:-1}
+      GATEWAY_MAX_INFLIGHT: ${GATEWAY_MAX_INFLIGHT:-100}
+    depends_on: [student-1, student-2, payment-1, payment-2, academic-1, academic-2]
+    ports: ["${GATEWAY_PORT:-8000}:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=1)"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus/prometheus.ft.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports: ["${PROMETHEUS_PORT:-9090}:9090"]
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?copy .env.example to .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["${GRAFANA_PORT:-3000}:3000"]
+    depends_on: [prometheus]
+
+volumes:
+  pgdata:
+  pgdata-standby:

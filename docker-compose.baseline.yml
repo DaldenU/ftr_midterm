@@ -1,0 +1,68 @@
+# BASELINE deployment: ONE instance per service, no restart policy, no replicas, naive clients.
+# Intentionally vulnerable - used to measure what the fault-tolerance mechanisms add.
+#   docker compose -f docker-compose.baseline.yml up --build
+name: uni-baseline
+
+x-base-env: &base-env
+  FT_MODE: baseline
+  DATABASE_URL: postgresql://${POSTGRES_USER:-uni}:${POSTGRES_PASSWORD:?copy .env.example to .env}@postgres:5432/uni_baseline
+  STUDENT_SERVICE_URLS: http://student:8000
+  ENABLE_FAULT_INJECTION: ${ENABLE_FAULT_INJECTION:-1}
+
+x-service: &service
+  restart: "no"                    # baseline: nobody restarts a crashed container
+  depends_on:
+    postgres: {condition: service_healthy}
+
+services:
+  postgres:
+    image: postgres:16
+    restart: "no"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-uni}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env}
+      POSTGRES_DB: uni_baseline
+    volumes:
+      - pgdata-baseline:/var/lib/postgresql/data
+      - ./database/schema_baseline.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/20-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-uni} -d uni_baseline"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  student: {<<: *service, build: {context: ., dockerfile: services/student-service/Dockerfile}, environment: {<<: *base-env, INSTANCE_ID: student-1}}
+  payment: {<<: *service, build: {context: ., dockerfile: services/payment-service/Dockerfile}, environment: {<<: *base-env, INSTANCE_ID: payment-1}}
+  academic: {<<: *service, build: {context: ., dockerfile: services/academic-service/Dockerfile}, environment: {<<: *base-env, INSTANCE_ID: academic-1}}
+
+  gateway:
+    build: {context: ., dockerfile: gateway/Dockerfile}
+    restart: "no"
+    environment:
+      FT_MODE: baseline
+      STUDENT_URLS: http://student:8000
+      PAYMENT_URLS: http://payment:8000
+      ACADEMIC_URLS: http://academic:8000
+    depends_on: [student, payment, academic]
+    ports: ["${GATEWAY_PORT:-8000}:8000"]
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    volumes:
+      - ./monitoring/prometheus/prometheus.baseline.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports: ["${PROMETHEUS_PORT:-9090}:9090"]
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?copy .env.example to .env}
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["${GRAFANA_PORT:-3000}:3000"]
+    depends_on: [prometheus]
+
+volumes:
+  pgdata-baseline:

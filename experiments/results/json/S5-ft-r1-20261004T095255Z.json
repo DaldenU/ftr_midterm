@@ -1,0 +1,134 @@
+{
+  "experiment_id": "S5-ft-r1-20261004T095255Z",
+  "scenario": "S5",
+  "repetition": 1,
+  "datetime": "2026-10-04T09:52:58+00:00",
+  "system_version": "fault-tolerant-1.0",
+  "mode": "ft",
+  "failure_injected": "Interrupted transactions: payment interrupted after first write (30%), grade batch interrupted mid-way (30%), double-submitted payments (20%), abandoned payments",
+  "initial_state": {
+    "replicas_per_service": 2,
+    "db": "up",
+    "payments_planned": 60,
+    "batches_planned": 20
+  },
+  "failure_start": 1791107578.891,
+  "failure_start_rel_s": 0.02,
+  "detection_time_s": 0.43,
+  "detection_monitor_s": null,
+  "detection_internal_s": null,
+  "detection_client_s": 0.43,
+  "recovery_start": 1791107578.891,
+  "recovery_end": 1791107587.506,
+  "recovery_duration_s": 8.616,
+  "repair_action_s": 8.616,
+  "total_requests": 135,
+  "successful_requests": 87,
+  "failed_requests": 48,
+  "shed_requests": 0,
+  "hard_failed_requests": 48,
+  "recovered_requests": 35,
+  "degraded_requests": 0,
+  "duplicate_requests": 55,
+  "duplicates_prevented": 12,
+  "window_total": 135,
+  "window_failed": 48,
+  "window_success": 87,
+  "window_error_rate": 0.3556,
+  "user_visible_downtime_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "probe_availability_strict": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "probe_availability_lenient": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "latency": {
+    "p50_ms": 41.4,
+    "p95_ms": 333.9,
+    "p99_ms": 473.0
+  },
+  "per_op": {
+    "post_batch": {
+      "total": 26,
+      "success": 20,
+      "failed": 6,
+      "error_rate": 0.2308,
+      "shed": 0,
+      "hard_failed": 6,
+      "hard_error_rate": 0.2308,
+      "recovered": 6,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 16.8,
+      "p95_ms": 343.1,
+      "p99_ms": 359.6,
+      "p95_all_ms": 346.6
+    },
+    "post_payment": {
+      "total": 109,
+      "success": 67,
+      "failed": 42,
+      "error_rate": 0.3853,
+      "shed": 0,
+      "hard_failed": 42,
+      "hard_error_rate": 0.3853,
+      "recovered": 29,
+      "degraded": 0,
+      "replays": 12,
+      "p50_ms": 45.4,
+      "p95_ms": 255.4,
+      "p99_ms": 476.1,
+      "p95_all_ms": 393.4
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 0,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 5,
+    "completed_payments": 55,
+    "duplicate_academic_records": 0,
+    "academic_records": 100,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "violations": {},
+    "consistent": true
+  },
+  "consistent": true,
+  "stack_events": [],
+  "observations": [
+    "Interrupted payments stayed PENDING (checkpoint 1); a retry with the same Idempotency-Key resumed them, abandoned ones were rolled back by the reconciler; batches were rolled back atomically."
+  ],
+  "logical_payments_planned": 60,
+  "logical_payments_acknowledged": 55,
+  "logical_batches_planned": 20,
+  "logical_batches_acknowledged": 20,
+  "interrupted_payments": 20,
+  "abandoned_payments": 5,
+  "double_submitted_payments": 12,
+  "interrupted_batches": 6,
+  "retry_recoveries_measured": 28,
+  "mean_client_recovery_s": 1.354,
+  "p95_client_recovery_s": 2.171,
+  "db_rollbacks": {
+    "avg_age_at_rollback_s": 6.03,
+    "count": 5
+  }
+}

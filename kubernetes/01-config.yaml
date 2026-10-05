@@ -1,0 +1,24 @@
+# Non-secret configuration shared by all application pods.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uni-config
+  namespace: uni
+data:
+  FT_MODE: "ft"
+  ENABLE_FAULT_INJECTION: "1"          # set to "0" outside of experiments
+  HTTP_TIMEOUT_S: "1.0"
+  RETRY_ATTEMPTS: "3"
+  DOWNSTREAM_DEADLINE_S: "2.0"
+  BREAKER_FAILURE_THRESHOLD: "5"
+  BREAKER_RESET_TIMEOUT_S: "5.0"
+  DB_RETRY_DEADLINE_S: "6.0"
+  MAX_INFLIGHT: "60"
+  DEGRADE_INFLIGHT: "30"
+  PAYMENT_LEASE_S: "1.5"
+  PAYMENT_ROLLBACK_AFTER_S: "6.0"
+  STUDENT_SERVICE_URLS: "http://student-0.student:8000,http://student-1.student:8000"
+  STUDENT_URLS: "http://student-0.student:8000,http://student-1.student:8000"
+  PAYMENT_URLS: "http://payment-0.payment:8000,http://payment-1.payment:8000"
+  ACADEMIC_URLS: "http://academic-0.academic:8000,http://academic-1.academic:8000"
+  GATEWAY_MAX_INFLIGHT: "100"

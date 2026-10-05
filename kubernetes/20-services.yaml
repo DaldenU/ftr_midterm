@@ -1,0 +1,170 @@
+apiVersion: v1
+kind: Service                          # headless: gives every replica a stable DNS name (student-0.student, student-1.student)
+metadata: {name: student, namespace: uni, labels: {app: student}}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: false
+  selector: {app: student}
+  ports: [{port: 8000, name: http}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: student, namespace: uni}
+spec:
+  serviceName: student
+  replicas: 2                          # hardware/infrastructure redundancy: two replicas per service
+  podManagementPolicy: Parallel
+  selector: {matchLabels: {app: student}}
+  template:
+    metadata:
+      labels: {app: student}
+      annotations: {prometheus.io/scrape: "true", prometheus.io/port: "8000", prometheus.io/path: /metrics}
+    spec:
+      topologySpreadConstraints:       # put the replicas on different nodes -> a node failure removes at most one replica
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: {matchLabels: {app: student}}
+      containers:
+        - name: student
+          image: uni-student:1.0
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 8000}]
+          envFrom: [{configMapRef: {name: uni-config}}]
+          env:
+            - {name: INSTANCE_ID, valueFrom: {fieldRef: {fieldPath: metadata.name}}}
+            - {name: DATABASE_URL, valueFrom: {secretKeyRef: {name: uni-secrets, key: DATABASE_URL}}}
+          readinessProbe:               # failing readiness removes the pod from the gateway's healthy set
+            httpGet: {path: /ready, port: 8000}
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 2
+          livenessProbe:                # failing liveness makes the kubelet restart the container (self-healing)
+            httpGet: {path: /health, port: 8000}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget              # voluntary disruptions (drain/upgrade) may never remove both replicas
+metadata: {name: student, namespace: uni}
+spec:
+  minAvailable: 1
+  selector: {matchLabels: {app: student}}
+---
+apiVersion: v1
+kind: Service                          # headless: gives every replica a stable DNS name (payment-0.payment, payment-1.payment)
+metadata: {name: payment, namespace: uni, labels: {app: payment}}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: false
+  selector: {app: payment}
+  ports: [{port: 8000, name: http}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: payment, namespace: uni}
+spec:
+  serviceName: payment
+  replicas: 2                          # hardware/infrastructure redundancy: two replicas per service
+  podManagementPolicy: Parallel
+  selector: {matchLabels: {app: payment}}
+  template:
+    metadata:
+      labels: {app: payment}
+      annotations: {prometheus.io/scrape: "true", prometheus.io/port: "8000", prometheus.io/path: /metrics}
+    spec:
+      topologySpreadConstraints:       # put the replicas on different nodes -> a node failure removes at most one replica
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: {matchLabels: {app: payment}}
+      containers:
+        - name: payment
+          image: uni-payment:1.0
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 8000}]
+          envFrom: [{configMapRef: {name: uni-config}}]
+          env:
+            - {name: INSTANCE_ID, valueFrom: {fieldRef: {fieldPath: metadata.name}}}
+            - {name: DATABASE_URL, valueFrom: {secretKeyRef: {name: uni-secrets, key: DATABASE_URL}}}
+          readinessProbe:               # failing readiness removes the pod from the gateway's healthy set
+            httpGet: {path: /ready, port: 8000}
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 2
+          livenessProbe:                # failing liveness makes the kubelet restart the container (self-healing)
+            httpGet: {path: /health, port: 8000}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget              # voluntary disruptions (drain/upgrade) may never remove both replicas
+metadata: {name: payment, namespace: uni}
+spec:
+  minAvailable: 1
+  selector: {matchLabels: {app: payment}}
+---
+apiVersion: v1
+kind: Service                          # headless: gives every replica a stable DNS name (academic-0.academic, academic-1.academic)
+metadata: {name: academic, namespace: uni, labels: {app: academic}}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: false
+  selector: {app: academic}
+  ports: [{port: 8000, name: http}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: academic, namespace: uni}
+spec:
+  serviceName: academic
+  replicas: 2                          # hardware/infrastructure redundancy: two replicas per service
+  podManagementPolicy: Parallel
+  selector: {matchLabels: {app: academic}}
+  template:
+    metadata:
+      labels: {app: academic}
+      annotations: {prometheus.io/scrape: "true", prometheus.io/port: "8000", prometheus.io/path: /metrics}
+    spec:
+      topologySpreadConstraints:       # put the replicas on different nodes -> a node failure removes at most one replica
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: {matchLabels: {app: academic}}
+      containers:
+        - name: academic
+          image: uni-academic:1.0
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 8000}]
+          envFrom: [{configMapRef: {name: uni-config}}]
+          env:
+            - {name: INSTANCE_ID, valueFrom: {fieldRef: {fieldPath: metadata.name}}}
+            - {name: DATABASE_URL, valueFrom: {secretKeyRef: {name: uni-secrets, key: DATABASE_URL}}}
+          readinessProbe:               # failing readiness removes the pod from the gateway's healthy set
+            httpGet: {path: /ready, port: 8000}
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 2
+          livenessProbe:                # failing liveness makes the kubelet restart the container (self-healing)
+            httpGet: {path: /health, port: 8000}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget              # voluntary disruptions (drain/upgrade) may never remove both replicas
+metadata: {name: academic, namespace: uni}
+spec:
+  minAvailable: 1
+  selector: {matchLabels: {app: academic}}

@@ -1,0 +1,29 @@
+# Fault DETECTION rules: monitoring is what turns a silent fault into a known failure.
+groups:
+  - name: availability
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 5s
+        labels: {severity: critical}
+        annotations: {summary: "{{ $labels.job }} {{ $labels.instance }} is down (scrape failed)"}
+      - alert: DatabaseUnreachable
+        expr: db_up == 0
+        for: 5s
+        labels: {severity: critical}
+        annotations: {summary: "{{ $labels.service }} {{ $labels.instance }} lost its database connection"}
+      - alert: HighErrorRatio
+        expr: sum(rate(http_requests_failed_total[30s])) / clamp_min(sum(rate(http_requests_success_total[30s]) + rate(http_requests_failed_total[30s])), 0.001) > 0.05
+        for: 10s
+        labels: {severity: warning}
+        annotations: {summary: "More than 5% of requests fail"}
+      - alert: CircuitBreakerOpen
+        expr: circuit_breaker_state == 2
+        for: 2s
+        labels: {severity: warning}
+        annotations: {summary: "Breaker {{ $labels.target }} OPEN on {{ $labels.instance }}: dependency degraded"}
+      - alert: LoadShedding
+        expr: rate(load_shed_total[30s]) > 0 or rate(gateway_load_shed_total[30s]) > 0
+        for: 5s
+        labels: {severity: info}
+        annotations: {summary: "Overload: requests are being shed"}
