@@ -3,7 +3,7 @@
 set -e
 if [ ! -s "$PGDATA/PG_VERSION" ]; then
   echo "cloning primary..."
-  export PGPASSWORD="${REPLICATION_PASSWORD:-replicator-pass}"
+  export PGPASSWORD="${REPLICATION_PASSWORD:?REPLICATION_PASSWORD must be set}"
   until pg_basebackup -h postgres -U replicator -D "$PGDATA" -R -X stream -c fast; do sleep 2; done
   chmod 700 "$PGDATA"
 fi

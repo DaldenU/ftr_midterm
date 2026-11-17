@@ -1,0 +1,76 @@
+{
+ "mode": "final",
+ "observation_s": 240.0,
+ "component": {
+  "instances": 6,
+  "failures_injected": 95,
+  "MTTF_component_s": 13.661452631578946,
+  "MTTR_component_s": 1.496442105263158,
+  "failure_rate_component_per_s": 0.07319865807596942,
+  "injected_mttf_s": 15.0,
+  "availability_component_theory": 0.9012763888888888
+ },
+ "services": {
+  "student": {
+   "replicas": 2,
+   "failures": 4,
+   "downtime_s": 3.7,
+   "uptime_s": 236.3,
+   "MTTF_s": 59.074999999999996,
+   "MTTR_s": 0.9250000000000025,
+   "MTBF_s": 60.0,
+   "failure_rate_per_s": 0.016927634363097757,
+   "availability_observed": 0.9845833333333333,
+   "availability_theory_ideal_redundancy": 0.9902536486091821
+  },
+  "payment": {
+   "replicas": 2,
+   "failures": 3,
+   "downtime_s": 2.3,
+   "uptime_s": 237.7,
+   "MTTF_s": 79.23333333333333,
+   "MTTR_s": 0.7666666666666634,
+   "MTBF_s": 80.0,
+   "failure_rate_per_s": 0.012620950778291964,
+   "availability_observed": 0.9904166666666667,
+   "availability_theory_ideal_redundancy": 0.9902536486091821
+  },
+  "academic": {
+   "replicas": 2,
+   "failures": 3,
+   "downtime_s": 1.8,
+   "uptime_s": 238.2,
+   "MTTF_s": 79.39999999999999,
+   "MTTR_s": 0.5999999999999991,
+   "MTBF_s": 80.0,
+   "failure_rate_per_s": 0.012594458438287154,
+   "availability_observed": 0.9924999999999999,
+   "availability_theory_ideal_redundancy": 0.9902536486091821
+  }
+ },
+ "system_any_service_down": {
+  "failures": 10,
+  "downtime_s": 7.8,
+  "MTTF_s": 23.22,
+  "MTTR_s": 0.7799999999999997,
+  "MTBF_s": 24.0,
+  "availability_observed": 0.9674999999999999
+ },
+ "system_theory_series_of_3_services": 0.9710449941046195,
+ "requests": {
+  "total": 4800,
+  "success": 4738,
+  "failed": 62,
+  "error_rate": 0.0129,
+  "shed": 0,
+  "hard_failed": 62,
+  "hard_error_rate": 0.0129,
+  "recovered": 179,
+  "degraded": 110,
+  "replays": 0,
+  "p50_ms": 6.1,
+  "p95_ms": 36.4,
+  "p99_ms": 140.5,
+  "p95_all_ms": 36.3
+ }
+}

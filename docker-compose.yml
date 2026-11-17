@@ -1,14 +1,21 @@
-# FAULT-TOLERANT deployment: 2 replicas of every service on two logical nodes (labels uni.node=A|B),
-# health-checked load-balancing gateway, auto-restart, monitoring.
-#   docker compose up --build                       # everything
-# Baseline (no fault tolerance):  docker compose -f docker-compose.baseline.yml up --build
-name: uni-ft
+# FINAL deployment (FT_MODE=final): 2 replicas of every service on two logical nodes (labels uni.node=A|B),
+# health-checked load-balancing gateway, auto-restart, monitoring + alert rules, and the security layer
+# (JWT, RBAC/BOLA, internal HMAC, validation, rate limiting, hash-chained audit).
+#   python scripts/gen_secrets.py            # writes .env secrets + secrets/users.json (never committed)
+#   docker compose up --build                # everything
+#   docker compose --profile replication up --build   # + PostgreSQL hot standby
+# Baseline (no fault tolerance, no security):  docker compose -f docker-compose.baseline.yml up --build
+name: uni-final
 
 x-ft-env: &ft-env
-  FT_MODE: ft
-  DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-uni}:${POSTGRES_PASSWORD:?copy .env.example to .env}@postgres:5432/uni_ft}
+  FT_MODE: final
+  DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-uni}:${POSTGRES_PASSWORD:?run scripts/gen_secrets.py}@postgres:5432/uni_final}
+  JWT_SECRET: ${JWT_SECRET:?run scripts/gen_secrets.py}
+  INTERNAL_AUTH_SECRET: ${INTERNAL_AUTH_SECRET:?run scripts/gen_secrets.py}
+  ADMIN_TOKEN: ${ADMIN_TOKEN:?run scripts/gen_secrets.py}
+  PYTHONDONTWRITEBYTECODE: "1"
   STUDENT_SERVICE_URLS: http://student-1:8000,http://student-2:8000
-  ENABLE_FAULT_INJECTION: ${ENABLE_FAULT_INJECTION:-1}
+  ENABLE_FAULT_INJECTION: ${ENABLE_FAULT_INJECTION:-0}   # chaos endpoints only in test environments
   HTTP_TIMEOUT_S: ${HTTP_TIMEOUT_S:-1.0}
   RETRY_ATTEMPTS: ${RETRY_ATTEMPTS:-3}
   DOWNSTREAM_DEADLINE_S: ${DOWNSTREAM_DEADLINE_S:-2.0}
@@ -22,6 +29,10 @@ x-ft-env: &ft-env
 
 x-service: &service
   restart: unless-stopped          # infrastructure self-healing: crashed container is restarted
+  read_only: true                  # hardening: immutable container filesystem
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
   depends_on:
     postgres: {condition: service_healthy}
   healthcheck:
@@ -40,17 +51,17 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-uni}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env}
-      POSTGRES_DB: uni_ft
-      REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:-replicator-pass}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run scripts/gen_secrets.py}
+      POSTGRES_DB: uni_final
+      REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:?run scripts/gen_secrets.py}
     command: ["postgres", "-c", "wal_level=replica", "-c", "max_wal_senders=5", "-c", "max_connections=300"]
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database/primary-init.sh:/docker-entrypoint-initdb.d/00-replication.sh:ro
-      - ./database/schema_ft.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+      - ./database/schema_final.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
       - ./database/seed.sql:/docker-entrypoint-initdb.d/20-seed.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-uni} -d uni_ft"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-uni} -d uni_final"]
       interval: 3s
       timeout: 2s
       retries: 20
@@ -63,8 +74,8 @@ services:
       postgres: {condition: service_healthy}
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-uni}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env}
-      REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:-replicator-pass}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run scripts/gen_secrets.py}
+      REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:?run scripts/gen_secrets.py}
     entrypoint: ["/standby-entrypoint.sh"]
     volumes:
       - pgdata-standby:/var/lib/postgresql/data
@@ -80,12 +91,23 @@ services:
   gateway:
     build: {context: ., dockerfile: gateway/Dockerfile}
     restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    volumes:
+      - ./secrets/users.json:/run/secrets/users.json:ro
     environment:
-      FT_MODE: ft
+      FT_MODE: final
+      JWT_SECRET: ${JWT_SECRET:?run scripts/gen_secrets.py}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?run scripts/gen_secrets.py}
+      USERS_FILE: /run/secrets/users.json
+      PYTHONDONTWRITEBYTECODE: "1"
+      RATE_LIMIT_RPS: ${RATE_LIMIT_RPS:-50}
+      RATE_LIMIT_BURST: ${RATE_LIMIT_BURST:-100}
       STUDENT_URLS: http://student-1:8000,http://student-2:8000
       PAYMENT_URLS: http://payment-1:8000,http://payment-2:8000
       ACADEMIC_URLS: http://academic-1:8000,http://academic-2:8000
-      ENABLE_FAULT_INJECTION: ${ENABLE_FAULT_INJECTION:-1}
+      ENABLE_FAULT_INJECTION: ${ENABLE_FAULT_INJECTION:-0}
       GATEWAY_MAX_INFLIGHT: ${GATEWAY_MAX_INFLIGHT:-100}
     depends_on: [student-1, student-2, payment-1, payment-2, academic-1, academic-2]
     ports: ["${GATEWAY_PORT:-8000}:8000"]
@@ -107,7 +129,7 @@ services:
     image: grafana/grafana:11.1.0
     restart: unless-stopped
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?copy .env.example to .env}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?run scripts/gen_secrets.py}
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro

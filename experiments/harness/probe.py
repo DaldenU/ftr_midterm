@@ -25,8 +25,9 @@ class Sample:
 
 
 class Prober:
-    def __init__(self, gateway_url: str, interval: float = 0.1, timeout: float = 1.0):
+    def __init__(self, gateway_url: str, interval: float = 0.1, timeout: float = 1.0, headers: dict | None = None):
         self.url, self.interval, self.timeout = gateway_url, interval, timeout
+        self.headers = headers or {}
         self.samples: list[Sample] = []
         self._lock = threading.Lock()
         self._stop = threading.Event()
@@ -43,7 +44,7 @@ class Prober:
         [t.join(2) for t in self._threads]
 
     def _loop(self, svc, path):
-        c = httpx.Client(base_url=self.url, timeout=self.timeout)
+        c = httpx.Client(base_url=self.url, timeout=self.timeout, headers=self.headers)
         while not self._stop.is_set():
             t0 = time.time()
             ok, deg = False, False

@@ -15,7 +15,9 @@ Orchestration is modelled explicitly:
 """
 from __future__ import annotations
 
+import json
 import os
+import secrets
 import signal
 import subprocess
 import sys
@@ -27,6 +29,9 @@ from pathlib import Path
 import httpx
 
 from .pg import PgCluster, ROOT
+
+if str(ROOT / "shared") not in sys.path:
+    sys.path.insert(0, str(ROOT / "shared"))
 
 SERVICE_DIRS = {"student": "services/student-service", "payment": "services/payment-service",
                 "academic": "services/academic-service"}
@@ -72,13 +77,52 @@ class Instance:
         return self.proc is not None and self.proc.poll() is None
 
 
+class SecurityFixture:
+    """Per-deployment secrets and synthetic principals for FT_MODE=final.
+
+    Nothing is committed to the repository: secrets and demo passwords are generated
+    at start-up, PBKDF2 hashes are written to a users file inside the work directory,
+    and the harness (as deployment owner) can mint tokens for its load generators.
+    """
+
+    ROLES = ([(f"S{i:04d}", "student") for i in range(1, 51)] + [(f"FAC{i:02d}", "faculty") for i in range(1, 21)]
+             + [("REG01", "registrar"), ("FIN01", "finance"), ("ADM01", "admin")])
+
+    def __init__(self, workdir: Path):
+        from ftlib import security as sec
+        self.sec = sec
+        self.jwt_secret = secrets.token_urlsafe(48)
+        self.internal_secret = secrets.token_urlsafe(48)
+        self.admin_token = secrets.token_urlsafe(48)
+        self.passwords = {u: secrets.token_urlsafe(12) for u, _ in self.ROLES}
+        self.roles = dict(self.ROLES)
+        self.users_file = Path(workdir) / f"users-{secrets.token_hex(4)}.json"
+        self.users_file.parent.mkdir(parents=True, exist_ok=True)
+        users = {u: {"role": r, "hash": sec.hash_password(self.passwords[u], iterations=20000)} for u, r in self.ROLES}
+        self.users_file.write_text(json.dumps(users))
+        self._tokens: dict[str, str] = {}
+
+    def env(self) -> dict:
+        return {"JWT_SECRET": self.jwt_secret, "INTERNAL_AUTH_SECRET": self.internal_secret,
+                "ADMIN_TOKEN": self.admin_token, "USERS_FILE": str(self.users_file)}
+
+    def token(self, user: str, ttl_s: int = 3600) -> str:
+        if user not in self._tokens:
+            self._tokens[user] = self.sec.issue_token(self.jwt_secret, user, self.roles[user], ttl_s=ttl_s)
+        return self._tokens[user]
+
+    def auth(self, user: str) -> dict:
+        return {"Authorization": f"Bearer {self.token(user)}"}
+
+
 class Stack:
     def __init__(self, mode: str, pg: PgCluster, replicas: int | None = None, base_port: int = 18000,
                  restart_delay_s: float = 1.0, env: dict | None = None, workdir: Path | None = None,
                  database_url: str | None = None, ha_db: bool = False):
-        assert mode in ("baseline", "ft")
+        assert mode in ("baseline", "ft", "final")
         self.mode, self.pg = mode, pg
-        self.replicas = replicas if replicas is not None else (2 if mode == "ft" else 1)
+        self.is_ft = mode in ("ft", "final")
+        self.replicas = replicas if replicas is not None else (2 if self.is_ft else 1)
         self.base_port = base_port
         self.restart_delay_s = restart_delay_s
         self.extra_env = env or {}
@@ -90,10 +134,12 @@ class Stack:
         self.instances: dict[str, Instance] = {}
         self._stop = threading.Event()
         self._sup: threading.Thread | None = None
-        self.http = httpx.Client(timeout=3.0)
+        self.security = SecurityFixture(self.workdir) if mode == "final" else None
+        self.admin_headers = {"X-Admin-Token": self.security.admin_token} if self.security else {}
+        self.http = httpx.Client(timeout=3.0, headers=self.admin_headers)
         self.nice = int(os.getenv("FTUIS_SERVICE_NICE", "5"))
         self.gateway_nice = int(os.getenv("FTUIS_GATEWAY_NICE", "-5"))
-        self.supervise = mode == "ft"
+        self.supervise = self.is_ft
         for svc, off in SERVICE_BASE_PORT.items():
             for i in range(self.replicas):
                 name = f"{svc}-{i + 1}"
@@ -122,6 +168,8 @@ class Stack:
             "PAYMENT_URLS": ",".join(self.service_urls("payment")),
             "ACADEMIC_URLS": ",".join(self.service_urls("academic")),
         })
+        if self.security:
+            env.update(self.security.env())
         env.update({k: str(v) for k, v in self.extra_env.items()})
         return env
 
@@ -164,7 +212,7 @@ class Stack:
                 self.wait_ready(inst)
         self._spawn(self.gateway)
         self.wait_ready(self.gateway)
-        if self.mode == "ft":                       # wait until the gateway sees every backend healthy
+        if self.is_ft:                              # wait until the gateway sees every backend healthy
             t0 = time.time()
             while time.time() - t0 < 15:
                 try:
@@ -266,6 +314,32 @@ class Stack:
     def clear_faults(self):
         for svc in ("student", "payment", "academic"):
             self.set_fault(svc)
+
+    # ------------------------------------------------------------------ resource use
+    def cpu_seconds(self) -> dict:
+        """utime+stime (s) of every live process of the stack, read from /proc (Linux)."""
+        tck = os.sysconf("SC_CLK_TCK") if hasattr(os, "sysconf") else 100
+        out = {}
+        for n, inst in self.instances.items():
+            if inst.proc and inst.alive():
+                try:
+                    f = open(f"/proc/{inst.proc.pid}/stat").read().rsplit(")", 1)[1].split()
+                    out[n] = (int(f[11]) + int(f[12])) / tck
+                except (OSError, IndexError, ValueError):
+                    pass
+        return out
+
+    def rss_mb(self) -> dict:
+        out = {}
+        for n, inst in self.instances.items():
+            if inst.proc and inst.alive():
+                try:
+                    for line in open(f"/proc/{inst.proc.pid}/status"):
+                        if line.startswith("VmRSS:"):
+                            out[n] = round(int(line.split()[1]) / 1024, 1)
+                except OSError:
+                    pass
+        return out
 
     # ------------------------------------------------------------------ introspection
     def gateway_events(self) -> dict:

@@ -33,9 +33,10 @@ from ..analysis.consistency import check
 from ..workload.generator import Client, Rec, Recorder, Workload, pct, summarize
 from .pg import PgCluster, ROOT
 from .probe import Prober, ReadyMonitor
+from .prom import AlertWatcher, PromRunner
 from .stack import Stack
 
-SYSTEM_VERSION = {"baseline": "baseline-1.0", "ft": "fault-tolerant-1.0"}
+SYSTEM_VERSION = {"baseline": "baseline-1.0", "ft": "fault-tolerant-1.0", "final": "final-2.0"}
 SERVICES = ("student", "payment", "academic")
 
 
@@ -45,7 +46,7 @@ class Run:
     def __init__(self, sid: str, mode: str, rep: int, pg: PgCluster, results: Path, *,
                  restart_delay_s: float = 1.0, env: dict | None = None, ha_db: bool | None = None, seed: int = 0):
         if ha_db is None:
-            ha_db = (sid == "S7" and mode == "ft")
+            ha_db = (sid == "S7" and mode != "baseline")
         self.sid, self.mode, self.rep, self.pg, self.results = sid, mode, rep, pg, Path(results)
         self.stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         self.id = f"{sid}-{mode}-r{rep}-{self.stamp}"
@@ -53,15 +54,23 @@ class Run:
         base_env.update(env or {})
         self.stack = Stack(mode, pg, restart_delay_s=restart_delay_s, env=base_env, ha_db=ha_db)
         self.recorder = Recorder()
-        self.client = Client(self.stack.gateway_url, timeout=5.0, seed=seed + rep)
+        self.sec = self.stack.security
+        self.client = Client(self.stack.gateway_url, timeout=5.0, seed=seed + rep, security=self.sec)
         self.wl = Workload(self.client, self.recorder, seed=seed + rep)
-        self.prober = Prober(self.stack.gateway_url)
+        self.prober = Prober(self.stack.gateway_url, headers=self.sec.auth("S0001") if self.sec else None)
         self.monitor = ReadyMonitor({n: i.url for n, i in self.stack.instances.items()})
+        jobs: dict[str, list] = {}
+        for n, i in self.stack.instances.items():
+            jobs.setdefault("gateway" if i.service == "gateway" else f"{i.service}-service", []).append((n, f"127.0.0.1:{i.port}"))
+        self.prom = PromRunner(jobs)
+        self.alerts = AlertWatcher(self.prom)
         self.notes: list[str] = []
 
     def __enter__(self):
         self.pg.reset_db(self.stack.db_name, ROOT / f"database/schema_{self.mode}.sql")
         self.stack.start()
+        if self.prom.start():
+            self.alerts.start()
         time.sleep(0.5)
         self.prober.start()
         self.monitor.start()
@@ -72,13 +81,15 @@ class Run:
         self.wl.stop()
         self.prober.stop()
         self.monitor.stop()
+        self.alerts.stop()
+        self.prom.stop()
         self.stack.clear_faults() if exc[0] is None else None
         self.stack.stop()
 
     # ------------------------------------------------------------------ helpers
     def settle(self):
         """Give the recovery machinery (payment reconciler) time to finish before consistency checks."""
-        time.sleep(6.5 if self.mode == "ft" else 1.0)
+        time.sleep(6.5 if self.mode != "baseline" else 1.0)
 
     def ev(self, type_: str, name: str, after: float):
         return next((e["ts"] for e in self.stack.events if e["type"] == type_ and e["name"] == name and e["ts"] >= after), None)
@@ -143,9 +154,20 @@ class Run:
             "consistency": cons, "consistent": cons["consistent"],
             "stack_events": [e for e in self.stack.events if e["ts"] >= self.t_start],
             "observations": list(self.notes),
+            "alerts": self.alert_record(t_fail, t_end) if self.prom.enabled else None,
         }
         rec.update(extra or {})
         return rec
+
+    def alert_record(self, t_fail: float, t_end: float) -> dict:
+        """System-side detection by Prometheus alert rules, relative to fault injection."""
+        a = self.alerts
+        fired = a.fired_between(t_fail, t_end)
+        first = {n: round(a.first(n, "firing", t_fail) - t_fail, 2) for n in fired}
+        return {"false_alerts_before_fault": a.fired_between(self.t_start, t_fail),
+                "fired_after_fault": fired, "first_firing_after_fault_s": first,
+                "detection_by_alert_s": min(first.values()) if first else None,
+                "timeline": [{**t, "rel_s": round(t["ts"] - t_fail, 2)} for t in a.transitions]}
 
     def start_workload(self, duration: float, rate: float = 40.0) -> threading.Thread:
         th = threading.Thread(target=self.wl.run_open_loop, args=(duration, rate), daemon=True)
@@ -205,7 +227,7 @@ def s2_db_failure(run: Run, pre=8.0, outage=8.0, total=32.0, rate=40.0) -> dict:
     # full functionality = every service strictly OK for 5 consecutive probes after the DB is back
     t_end = run.prober.full_ok_since(t_dbup, k=5)
     d_int = None
-    if run.mode == "ft":
+    if run.mode != "baseline":
         ev = run.stack.gateway_events().get("events", [])
         downs = [e["ts"] for e in ev if e["state"] == "down" and e["ts"] >= t_fail]
         d_int = round(min(downs) - t_fail, 3) if downs else None
@@ -231,7 +253,7 @@ def s3_service_timeout(run: Run, pre=8.0, fault_s=20.0, total=46.0, rate=40.0, l
     th.join()
     t_end = run.prober.full_ok_since(t_clear, k=5)
     d_int, closed_ts = None, None
-    if run.mode == "ft":
+    if run.mode != "baseline":
         opens, closes = [], []
         for n in ("payment-1", "payment-2", "academic-1", "academic-2"):
             s = st.admin_state(n)
@@ -256,7 +278,7 @@ def s3_service_timeout(run: Run, pre=8.0, fault_s=20.0, total=46.0, rate=40.0, l
 # =============================================================================== S4
 def s4_node_failure(run: Run, pre=8.0, total=40.0, rate=40.0, operator_delay=15.0) -> dict:
     st = run.stack
-    if run.mode == "ft":
+    if run.mode != "baseline":
         st.restart_delay_s = 5.0      # a replacement node/pod needs time to be scheduled and booted
     th = run.start_workload(total, rate)
     time.sleep(pre)
@@ -288,7 +310,7 @@ def s4_node_failure(run: Run, pre=8.0, total=40.0, rate=40.0, operator_delay=15.
         initial_state={"replicas_per_service": st.replicas, "nodes": sorted({i.node for i in st.instances.values() if i.service != 'gateway'}), "db": "up"},
         d_internal=d_int, monitor_names=names,
         extra={"killed_instances": names, "operator_delay_s": operator_delay if run.mode == "baseline" else None,
-               "node_restart_delay_s": st.restart_delay_s if run.mode == "ft" else None})
+               "node_restart_delay_s": st.restart_delay_s if run.mode != "baseline" else None})
 
 
 # =============================================================================== S5
@@ -305,7 +327,7 @@ def s5_transaction(run: Run, n_payments=60, n_batches=20, batch_size=5, workers=
 
     def send(i, attempt, fault=None):
         body = {"student_id": f"S{(i % 50) + 1:04d}", "invoice_id": f"INV-S5-{i}", "amount": 1000.0}
-        h = {"Idempotency-Key": f"KEY-S5-{i}"}
+        h = {"Idempotency-Key": f"KEY-S5-{i}", **(run.sec.auth(body["student_id"]) if run.sec else {})}
         if fault:
             h["X-Fault"] = fault
             with lock:
@@ -363,7 +385,9 @@ def s5_transaction(run: Run, n_payments=60, n_batches=20, batch_size=5, workers=
         for attempt, d in enumerate([0, 0.3, 0.6, 1.0], start=1):
             time.sleep(d)
             h = {"X-Fault": "interrupt:mid_batch"} if (faulty and attempt == 1) else {}
-            if h:
+            if run.sec:
+                h.update(run.sec.auth("REG01"))
+            if "X-Fault" in h:
                 with lock:
                     first_fault["t"] = first_fault["t"] or time.time()
             r = Rec(op="post_batch", t0=time.time(), logical_id=bid, attempt=attempt, phase="s5")
@@ -409,7 +433,7 @@ def s5_transaction(run: Run, n_payments=60, n_batches=20, batch_size=5, workers=
              "mean_client_recovery_s": round(sum(recover_times) / len(recover_times), 3) if recover_times else None,
              "p95_client_recovery_s": round(pct(recover_times, 95), 3) if recover_times else None,
              "db_rollbacks": {"avg_age_at_rollback_s": rb[0], "count": rb[1]} if rb else None}
-    if run.mode == "ft":
+    if run.mode != "baseline":
         run.notes.append("Interrupted payments stayed PENDING (checkpoint 1); a retry with the same Idempotency-Key resumed them, "
                          "abandoned ones were rolled back by the reconciler; batches were rolled back atomically.")
     else:
@@ -466,9 +490,9 @@ def s6_high_load(run: Run, steps=(5, 25, 75, 150), step_s=12.0, cooldown_s=12.0)
     base_p95 = per_phase[f"c{base_conc}"]["p95_all_ms"]
     rec_t = next((t for t, p95, er in windows(t_peak_end, time.time()) if p95 < max(2 * base_p95, 100) and er == 0), None)
     shed = (sum(st.service_metric(n, "load_shed_total") for n in st.instances if n != "gateway")
-            + st.service_metric("gateway", "gateway_load_shed_total")) if run.mode == "ft" else 0
+            + st.service_metric("gateway", "gateway_load_shed_total")) if run.mode != "baseline" else 0
     degraded = sum(st.service_metric(n, "degraded_responses_total") for n in st.instances if n != "gateway")
-    if run.mode == "ft":
+    if run.mode != "baseline":
         run.notes.append("FT gateway/services shed excess load (HTTP 503 + Retry-After) above the in-flight limits and skip optional downstream calls above DEGRADE_INFLIGHT.")
     else:
         run.notes.append("Baseline accepts all work and queues it: latency grows with concurrency instead of requests being rejected.")
@@ -492,7 +516,7 @@ def s7_db_primary_loss(run: Run, pre=8.0, total=48.0, rate=40.0, operator_delay=
     """
     pg, st = run.pg, run.stack
     dump = None
-    if run.mode == "ft":
+    if run.mode != "baseline":
         pg.start_standby()
         caught_up = pg.wait_standby_caught_up()
         run.notes.append(f"Standby streaming from primary, caught up before test: {caught_up}.")
@@ -504,7 +528,7 @@ def s7_db_primary_loss(run: Run, pre=8.0, total=48.0, rate=40.0, operator_delay=
     t_fail = time.time()
     pg.destroy_primary()
     t_promoted = None
-    if run.mode == "ft":
+    if run.mode != "baseline":
         # failover controller (stand-in for Patroni/repmgr): promote after 3 consecutive failed probes
         fails = 0
         while fails < 3:
@@ -533,7 +557,7 @@ def s7_db_primary_loss(run: Run, pre=8.0, total=48.0, rate=40.0, operator_delay=
     rec = run.finalize(
         failure_injected="Permanent loss of the primary database host (SIGKILL + data directory deleted)",
         t_fail=t_fail, t_rec_start=t_rs, t_rec_end=t_end, d_internal=d_int,
-        initial_state={"replicas_per_service": st.replicas, "db": "primary" + (" + hot standby" if run.mode == "ft" else " + nightly-style backup")},
+        initial_state={"replicas_per_service": st.replicas, "db": "primary" + (" + hot standby" if run.mode != "baseline" else " + nightly-style backup")},
         extra={"db_available_again_s": round(t_dbup - t_fail, 2), "operator_delay_s": operator_delay if run.mode == "baseline" else None})
     c = rec["consistency"]
     rec["rpo_lost_acknowledged_writes"] = c["lost_acknowledged_payments"] + c["lost_acknowledged_grades"]

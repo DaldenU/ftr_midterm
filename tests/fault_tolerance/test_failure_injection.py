@@ -86,11 +86,17 @@ def test_node_failure_survived_without_total_interruption(ft_stack, ft_client):
 
 def test_health_check_detects_failed_replica_and_load_balancer_avoids_it(ft_stack, ft_client):
     assert wait_until(lambda: all_alive(ft_stack) and gw_ready(ft_stack), 20)
+    # keep the supervisor from restarting the replica during the check (it restarts within 0.5 s otherwise,
+    # which made this test racy: the replica could be back before two failed health checks were seen)
+    ft_stack.instances["academic-2"].stopped_by_operator = True
     ft_stack.kill_instance("academic-2")
-    assert wait_until(lambda: not [b for b in ft_stack.gateway_events()["backends"]["academic"]
-                                   if b["url"] == ft_stack.instances["academic-2"].url and b["healthy"]], 5)
-    served = {ft_client.get("/students/S0001/transcript").headers["x-served-by"] for _ in range(10)}
-    assert served == {ft_stack.instances["academic-1"].url}               # only the healthy replica receives traffic
+    try:
+        assert wait_until(lambda: not [b for b in ft_stack.gateway_events()["backends"]["academic"]
+                                       if b["url"] == ft_stack.instances["academic-2"].url and b["healthy"]], 5)
+        served = {ft_client.get("/students/S0001/transcript").headers["x-served-by"] for _ in range(10)}
+        assert served == {ft_stack.instances["academic-1"].url}               # only the healthy replica receives traffic
+    finally:
+        ft_stack.restart_instance("academic-2")
     assert wait_until(lambda: all_alive(ft_stack) and gw_ready(ft_stack), 20)
 
 

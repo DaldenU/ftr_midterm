@@ -7,7 +7,5 @@ __pycache__/
 *.dump
 experiments/results/tmp_backup.dump
 
-# Reports and generated guides
-*.docx
-report/
-docs/
+# generated secrets (scripts/gen_secrets.py) - never commit
+secrets/

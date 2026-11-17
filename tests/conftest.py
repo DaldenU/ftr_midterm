@@ -52,6 +52,19 @@ def baseline_stack(pg):
     st.stop()
 
 
+@pytest.fixture(scope="session")
+def final_stack(pg):
+    st = _make_stack("final", pg, 19800)
+    yield st
+    st.stop()
+
+
+@pytest.fixture
+def final_client(final_stack):
+    with httpx.Client(base_url=final_stack.gateway_url, timeout=10) as c:
+        yield c
+
+
 @pytest.fixture(params=["baseline", "ft"])
 def stack(request, baseline_stack, ft_stack):
     return baseline_stack if request.param == "baseline" else ft_stack

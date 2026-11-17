@@ -4,10 +4,10 @@ global:
 rule_files: [/etc/prometheus/alerts.yml]
 scrape_configs:
   - job_name: gateway
-    static_configs: [{targets: ["gateway:8000"], labels: {tier: edge}}]
+    static_configs: [{targets: ["gateway:8000"], labels: {tier: edge, name: gateway}}]
   - job_name: student-service
-    static_configs: [{targets: ["student-1:8000"], labels: {node: A}}, {targets: ["student-2:8000"], labels: {node: B}}]
+    static_configs: [{targets: ["student-1:8000"], labels: {node: A, name: student-1}}, {targets: ["student-2:8000"], labels: {node: B, name: student-2}}]
   - job_name: payment-service
-    static_configs: [{targets: ["payment-1:8000"], labels: {node: A}}, {targets: ["payment-2:8000"], labels: {node: B}}]
+    static_configs: [{targets: ["payment-1:8000"], labels: {node: A, name: payment-1}}, {targets: ["payment-2:8000"], labels: {node: B, name: payment-2}}]
   - job_name: academic-service
-    static_configs: [{targets: ["academic-1:8000"], labels: {node: A}}, {targets: ["academic-2:8000"], labels: {node: B}}]
+    static_configs: [{targets: ["academic-1:8000"], labels: {node: A, name: academic-1}}, {targets: ["academic-2:8000"], labels: {node: B, name: academic-2}}]

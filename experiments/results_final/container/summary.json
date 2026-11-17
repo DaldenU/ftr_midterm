@@ -1,0 +1,173 @@
+{
+  "kill-baseline": {
+    "requests_failed": {
+      "mean": 43.0,
+      "min": 40,
+      "max": 49,
+      "n": 3
+    },
+    "requests_total": {
+      "mean": 720.0,
+      "min": 720,
+      "max": 720,
+      "n": 3
+    },
+    "success_ratio": {
+      "mean": 0.94,
+      "min": 0.9319,
+      "max": 0.9444,
+      "n": 3
+    },
+    "p95_ms": {
+      "mean": 38.833,
+      "min": 37.6,
+      "max": 40.0,
+      "n": 3
+    },
+    "container_running_again_s": {
+      "mean": 10.19,
+      "min": 10.15,
+      "max": 10.21,
+      "n": 3
+    },
+    "docker_unhealthy_s": {
+      "mean": 0.213,
+      "min": 0.17,
+      "max": 0.25,
+      "n": 3
+    },
+    "docker_healthy_again_s": {
+      "mean": 15.257,
+      "min": 15.14,
+      "max": 15.33,
+      "n": 3
+    },
+    "gateway_ejected_s": null,
+    "gateway_restored_s": null,
+    "restart_count_after": {
+      "mean": 0.0,
+      "min": 0,
+      "max": 0,
+      "n": 3
+    }
+  },
+  "kill-final": {
+    "requests_failed": {
+      "mean": 0.333,
+      "min": 0,
+      "max": 1,
+      "n": 3
+    },
+    "requests_total": {
+      "mean": 720.0,
+      "min": 720,
+      "max": 720,
+      "n": 3
+    },
+    "success_ratio": {
+      "mean": 1.0,
+      "min": 0.9986,
+      "max": 1.0,
+      "n": 3
+    },
+    "p95_ms": {
+      "mean": 38.9,
+      "min": 37.5,
+      "max": 40.2,
+      "n": 3
+    },
+    "container_running_again_s": {
+      "mean": 0.327,
+      "min": 0.27,
+      "max": 0.37,
+      "n": 3
+    },
+    "docker_unhealthy_s": {
+      "mean": 0.135,
+      "min": 0.12,
+      "max": 0.15,
+      "n": 2
+    },
+    "docker_healthy_again_s": {
+      "mean": 5.387,
+      "min": 5.31,
+      "max": 5.47,
+      "n": 3
+    },
+    "gateway_ejected_s": {
+      "mean": 0.377,
+      "min": 0.01,
+      "max": 0.84,
+      "n": 3
+    },
+    "gateway_restored_s": {
+      "mean": 1.41,
+      "min": 1.35,
+      "max": 1.48,
+      "n": 3
+    },
+    "restart_count_after": {
+      "mean": 1.0,
+      "min": 1,
+      "max": 1,
+      "n": 3
+    }
+  },
+  "hang-final": {
+    "requests_failed": {
+      "mean": 0.0,
+      "min": 0,
+      "max": 0,
+      "n": 3
+    },
+    "requests_total": {
+      "mean": 720.0,
+      "min": 720,
+      "max": 720,
+      "n": 3
+    },
+    "success_ratio": {
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0,
+      "n": 3
+    },
+    "p95_ms": {
+      "mean": 1129.467,
+      "min": 1123.6,
+      "max": 1133.6,
+      "n": 3
+    },
+    "container_running_again_s": null,
+    "docker_unhealthy_s": {
+      "mean": 5.583,
+      "min": 5.31,
+      "max": 5.82,
+      "n": 3
+    },
+    "docker_healthy_again_s": {
+      "mean": 16.873,
+      "min": 16.69,
+      "max": 17.04,
+      "n": 3
+    },
+    "gateway_ejected_s": {
+      "mean": 1.827,
+      "min": 1.76,
+      "max": 1.94,
+      "n": 3
+    },
+    "gateway_restored_s": {
+      "mean": 15.5,
+      "min": 15.42,
+      "max": 15.61,
+      "n": 3
+    },
+    "restart_count_after": {
+      "mean": 0.0,
+      "min": 0,
+      "max": 0,
+      "n": 3
+    }
+  }
+}

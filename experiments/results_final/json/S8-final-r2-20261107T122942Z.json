@@ -1,0 +1,462 @@
+{
+  "experiment_id": "S8-final-r2-20261107T122942Z",
+  "scenario": "S8",
+  "repetition": 2,
+  "datetime": "2026-11-07T12:29:45+00:00",
+  "system_version": "final-2.0",
+  "mode": "final",
+  "failure_injected": "sequence: SIGKILL payment-1; +1500 ms latency on student-service for 12s; PostgreSQL crash-stop for 6s",
+  "initial_state": {
+    "replicas_per_service": 2,
+    "db": "up",
+    "prometheus": true,
+    "scrape_eval_interval": "1s"
+  },
+  "failure_start": 1794054599.637,
+  "failure_start_rel_s": 14.03,
+  "detection_time_s": 0.021,
+  "detection_monitor_s": 0.021,
+  "detection_internal_s": null,
+  "detection_client_s": 40.071,
+  "recovery_start": null,
+  "recovery_end": 1794054641.978,
+  "recovery_duration_s": 42.342,
+  "repair_action_s": null,
+  "total_requests": 2040,
+  "successful_requests": 2016,
+  "failed_requests": 24,
+  "shed_requests": 0,
+  "hard_failed_requests": 24,
+  "recovered_requests": 79,
+  "degraded_requests": 261,
+  "duplicate_requests": 0,
+  "duplicates_prevented": 0,
+  "window_total": 1270,
+  "window_failed": 24,
+  "window_success": 1246,
+  "window_error_rate": 0.0189,
+  "user_visible_downtime_s": {
+    "student": 12.03,
+    "payment": 6.01,
+    "academic": 2.0
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 18.44,
+    "payment": 6.01,
+    "academic": 19.18
+  },
+  "probe_availability_strict": {
+    "student": 0.8471,
+    "payment": 0.9888,
+    "academic": 0.7102
+  },
+  "probe_availability_lenient": {
+    "student": 0.9752,
+    "payment": 0.9888,
+    "academic": 0.9947
+  },
+  "latency": {
+    "p50_ms": 8.0,
+    "p95_ms": 1508.5,
+    "p99_ms": 2464.6
+  },
+  "per_op": {
+    "get_account": {
+      "total": 106,
+      "success": 102,
+      "failed": 4,
+      "error_rate": 0.0377,
+      "shed": 0,
+      "hard_failed": 4,
+      "hard_error_rate": 0.0377,
+      "recovered": 3,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 5.8,
+      "p95_ms": 17.5,
+      "p99_ms": 3244.2,
+      "p95_all_ms": 2923.1
+    },
+    "get_student": {
+      "total": 895,
+      "success": 895,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 7,
+      "degraded": 84,
+      "replays": 0,
+      "p50_ms": 5.9,
+      "p95_ms": 1509.4,
+      "p99_ms": 1515.9,
+      "p95_all_ms": 1509.4
+    },
+    "get_transcript": {
+      "total": 431,
+      "success": 431,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 18,
+      "degraded": 114,
+      "replays": 0,
+      "p50_ms": 8.3,
+      "p95_ms": 22.4,
+      "p99_ms": 2127.0,
+      "p95_all_ms": 22.4
+    },
+    "post_grade": {
+      "total": 293,
+      "success": 278,
+      "failed": 15,
+      "error_rate": 0.0512,
+      "shed": 0,
+      "hard_failed": 15,
+      "hard_error_rate": 0.0512,
+      "recovered": 17,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 7.8,
+      "p95_ms": 1324.5,
+      "p99_ms": 3545.7,
+      "p95_all_ms": 3980.7
+    },
+    "post_payment": {
+      "total": 315,
+      "success": 310,
+      "failed": 5,
+      "error_rate": 0.0159,
+      "shed": 0,
+      "hard_failed": 5,
+      "hard_error_rate": 0.0159,
+      "recovered": 34,
+      "degraded": 63,
+      "replays": 0,
+      "p50_ms": 34.1,
+      "p95_ms": 2146.7,
+      "p99_ms": 4370.0,
+      "p95_all_ms": 2239.0
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 0,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 315,
+    "duplicate_academic_records": 0,
+    "academic_records": 288,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "attack_rows": 0,
+    "audit_events": 603,
+    "audit_deny_events": 0,
+    "audit_broken_links": 0,
+    "violations": {},
+    "consistent": true
+  },
+  "consistent": true,
+  "stack_events": [
+    {
+      "ts": 1794054599.6367586,
+      "type": "fault_kill_instance",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794054599.7044048,
+      "type": "supervisor_detected_exit",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794054600.704854,
+      "type": "restart_start",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794054601.2461803,
+      "type": "restart_ready",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794054615.6445396,
+      "type": "fault_set",
+      "name": "student",
+      "latency_ms": 1500,
+      "error_rate": 0,
+      "fail_all": false
+    },
+    {
+      "ts": 1794054627.6495526,
+      "type": "fault_cleared",
+      "name": "student",
+      "latency_ms": 0,
+      "error_rate": 0,
+      "fail_all": false
+    }
+  ],
+  "observations": [
+    "Three faults injected in sequence; detection = first firing of an alert rule expected for that fault."
+  ],
+  "alerts": {
+    "false_alerts_before_fault": [],
+    "fired_after_fault": [
+      "CircuitBreakerOpen",
+      "DatabaseUnreachable",
+      "DegradedResponses",
+      "HighLatencyP95",
+      "InstanceRecentlyDown"
+    ],
+    "first_firing_after_fault_s": {
+      "CircuitBreakerOpen": 19.26,
+      "DatabaseUnreachable": 39.03,
+      "DegradedResponses": 22.27,
+      "HighLatencyP95": 22.02,
+      "InstanceRecentlyDown": 3.0
+    },
+    "detection_by_alert_s": 3.0,
+    "timeline": [
+      {
+        "ts": 1794054600.6356559,
+        "alert": "InstanceDown",
+        "state": "pending",
+        "rel_s": 1.0
+      },
+      {
+        "ts": 1794054602.6401289,
+        "alert": "InstanceRecentlyDown",
+        "state": "firing",
+        "rel_s": 3.0
+      },
+      {
+        "ts": 1794054602.6401289,
+        "alert": "InstanceDown",
+        "state": "resolved",
+        "rel_s": 3.0
+      },
+      {
+        "ts": 1794054617.9010954,
+        "alert": "CircuitBreakerOpen",
+        "state": "pending",
+        "rel_s": 18.26
+      },
+      {
+        "ts": 1794054618.651364,
+        "alert": "HighLatencyP95",
+        "state": "pending",
+        "rel_s": 19.01
+      },
+      {
+        "ts": 1794054618.90144,
+        "alert": "CircuitBreakerOpen",
+        "state": "firing",
+        "rel_s": 19.26
+      },
+      {
+        "ts": 1794054619.9017708,
+        "alert": "DegradedResponses",
+        "state": "pending",
+        "rel_s": 20.27
+      },
+      {
+        "ts": 1794054621.6529872,
+        "alert": "HighLatencyP95",
+        "state": "firing",
+        "rel_s": 22.02
+      },
+      {
+        "ts": 1794054621.9030817,
+        "alert": "DegradedResponses",
+        "state": "firing",
+        "rel_s": 22.27
+      },
+      {
+        "ts": 1794054631.6622722,
+        "alert": "InstanceRecentlyDown",
+        "state": "resolved",
+        "rel_s": 32.03
+      },
+      {
+        "ts": 1794054632.6625926,
+        "alert": "CircuitBreakerOpen",
+        "state": "resolved",
+        "rel_s": 33.03
+      },
+      {
+        "ts": 1794054636.6645846,
+        "alert": "DatabaseUnreachable",
+        "state": "pending",
+        "rel_s": 37.03
+      },
+      {
+        "ts": 1794054636.6645846,
+        "alert": "CircuitBreakerOpen",
+        "state": "pending",
+        "rel_s": 37.03
+      },
+      {
+        "ts": 1794054636.6645846,
+        "alert": "HighLatencyP95",
+        "state": "resolved",
+        "rel_s": 37.03
+      },
+      {
+        "ts": 1794054637.6653721,
+        "alert": "CircuitBreakerOpen",
+        "state": "firing",
+        "rel_s": 38.03
+      },
+      {
+        "ts": 1794054638.665839,
+        "alert": "DatabaseUnreachable",
+        "state": "firing",
+        "rel_s": 39.03
+      },
+      {
+        "ts": 1794054642.6693375,
+        "alert": "HighLatencyP95",
+        "state": "pending",
+        "rel_s": 43.03
+      },
+      {
+        "ts": 1794054643.6730413,
+        "alert": "CircuitBreakerOpen",
+        "state": "resolved",
+        "rel_s": 44.04
+      },
+      {
+        "ts": 1794054643.6730413,
+        "alert": "DatabaseUnreachable",
+        "state": "resolved",
+        "rel_s": 44.04
+      },
+      {
+        "ts": 1794054645.6737938,
+        "alert": "HighLatencyP95",
+        "state": "firing",
+        "rel_s": 46.04
+      },
+      {
+        "ts": 1794054652.6780179,
+        "alert": "DegradedResponses",
+        "state": "resolved",
+        "rel_s": 53.04
+      },
+      {
+        "ts": 1794054652.6780179,
+        "alert": "HighLatencyP95",
+        "state": "resolved",
+        "rel_s": 53.04
+      }
+    ]
+  },
+  "per_fault": [
+    {
+      "fault": "instance_crash",
+      "inject_rel_s": 14.03,
+      "duration_s": 1.61,
+      "alerts_fired": [
+        "InstanceRecentlyDown"
+      ],
+      "first_alert": "InstanceRecentlyDown",
+      "detection_s": 3.0,
+      "resolved_after_clear_s": 30.42,
+      "first_client_error_s": null
+    },
+    {
+      "fault": "slow_dependency",
+      "inject_rel_s": 30.03,
+      "duration_s": 12.01,
+      "alerts_fired": [
+        "CircuitBreakerOpen",
+        "DegradedResponses",
+        "HighLatencyP95"
+      ],
+      "first_alert": "CircuitBreakerOpen",
+      "detection_s": 3.26,
+      "resolved_after_clear_s": 25.03,
+      "first_client_error_s": null
+    },
+    {
+      "fault": "database_outage",
+      "inject_rel_s": 50.04,
+      "duration_s": 6.33,
+      "alerts_fired": [
+        "DatabaseUnreachable"
+      ],
+      "first_alert": "DatabaseUnreachable",
+      "detection_s": 3.02,
+      "resolved_after_clear_s": 1.69,
+      "first_client_error_s": 4.06
+    }
+  ],
+  "false_alerts_during_warmup": [],
+  "warmup_s": 14.0,
+  "diagnosability": {
+    "incident_requests": 285,
+    "found_in_logs": 285,
+    "localized_cause": 282,
+    "multi_hop_trace": 285,
+    "found_ratio": 1.0,
+    "localized_ratio": 0.9895,
+    "multi_hop_ratio": 1.0
+  },
+  "sample_trace": {
+    "request_id": "78b828bd2f22",
+    "client_status": 200,
+    "client_degraded": "student-unavailable",
+    "spans": [
+      {
+        "ts": "2026-11-07T12:30:17.364Z",
+        "service": "academic-service",
+        "instance": "academic-1",
+        "msg": "request",
+        "operation": "GET /students/{student_id}/transcript",
+        "status": 200,
+        "latency_ms": 1118.12,
+        "span_id": "5deb639d",
+        "parent_span_id": "b3bb7702",
+        "degraded": "student-unavailable",
+        "retry_count": 1,
+        "actor": "S0027",
+        "role": "student"
+      },
+      {
+        "ts": "2026-11-07T12:30:17Z",
+        "service": "gateway",
+        "msg": "gateway_proxy",
+        "operation": "GET /students/S0027/transcript",
+        "status": 200,
+        "latency_ms": 1119.81,
+        "span_id": "b3bb7702",
+        "actor": "S0027",
+        "role": "student",
+        "served_by": "http://127.0.0.1:18301",
+        "gateway_attempts": 1
+      },
+      {
+        "ts": "2026-11-07T12:30:17.750Z",
+        "service": "student-service",
+        "instance": "student-1",
+        "msg": "request",
+        "operation": "GET /students/{student_id}",
+        "status": 200,
+        "latency_ms": 1501.7,
+        "span_id": "4566d013",
+        "parent_span_id": "5deb639d",
+        "retry_count": 0,
+        "actor": "svc:academic-service",
+        "role": "service"
+      }
+    ]
+  },
+  "detected_faults": 3,
+  "operator_delay_s": null
+}

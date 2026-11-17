@@ -1,0 +1,280 @@
+{
+  "experiment_id": "S4-final-r1-20261107T120650Z",
+  "scenario": "S4",
+  "repetition": 1,
+  "datetime": "2026-11-07T12:06:53+00:00",
+  "system_version": "final-2.0",
+  "mode": "final",
+  "failure_injected": "Node A lost: SIGKILL of every instance placed on it",
+  "initial_state": {
+    "replicas_per_service": 2,
+    "nodes": [
+      "A",
+      "B"
+    ],
+    "db": "up"
+  },
+  "failure_start": 1794053221.617,
+  "failure_start_rel_s": 8.02,
+  "detection_time_s": 0.014,
+  "detection_monitor_s": 0.036,
+  "detection_internal_s": 0.014,
+  "detection_client_s": null,
+  "recovery_start": 1794053226.692,
+  "recovery_end": 1794053227.951,
+  "recovery_duration_s": 6.335,
+  "repair_action_s": 1.26,
+  "total_requests": 1600,
+  "successful_requests": 1600,
+  "failed_requests": 0,
+  "shed_requests": 0,
+  "hard_failed_requests": 0,
+  "recovered_requests": 47,
+  "degraded_requests": 0,
+  "duplicate_requests": 0,
+  "duplicates_prevented": 0,
+  "window_total": 253,
+  "window_failed": 0,
+  "window_success": 253,
+  "window_error_rate": 0.0,
+  "user_visible_downtime_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "probe_availability_strict": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "probe_availability_lenient": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "latency": {
+    "p50_ms": 7.1,
+    "p95_ms": 38.0,
+    "p99_ms": 141.7
+  },
+  "per_op": {
+    "get_account": {
+      "total": 88,
+      "success": 88,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 5.3,
+      "p95_ms": 13.8,
+      "p99_ms": 22.7,
+      "p95_all_ms": 13.8
+    },
+    "get_student": {
+      "total": 700,
+      "success": 700,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 5.3,
+      "p95_ms": 12.0,
+      "p99_ms": 19.2,
+      "p95_all_ms": 12.0
+    },
+    "get_transcript": {
+      "total": 330,
+      "success": 330,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 29,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 8.7,
+      "p95_ms": 121.5,
+      "p99_ms": 133.4,
+      "p95_all_ms": 121.5
+    },
+    "post_grade": {
+      "total": 253,
+      "success": 253,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 7.1,
+      "p95_ms": 19.8,
+      "p99_ms": 28.9,
+      "p95_all_ms": 19.8
+    },
+    "post_payment": {
+      "total": 229,
+      "success": 229,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 18,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 34.3,
+      "p95_ms": 145.8,
+      "p99_ms": 160.6,
+      "p95_all_ms": 145.8
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 0,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 229,
+    "duplicate_academic_records": 0,
+    "academic_records": 253,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "attack_rows": 0,
+    "audit_events": 482,
+    "audit_deny_events": 0,
+    "audit_broken_links": 0,
+    "violations": {},
+    "consistent": true
+  },
+  "consistent": true,
+  "stack_events": [
+    {
+      "ts": 1794053221.616951,
+      "type": "fault_kill_node",
+      "name": "A",
+      "instances": [
+        "student-1",
+        "payment-1",
+        "academic-1"
+      ]
+    },
+    {
+      "ts": 1794053221.6916387,
+      "type": "supervisor_detected_exit",
+      "name": "student-1"
+    },
+    {
+      "ts": 1794053221.6918955,
+      "type": "supervisor_detected_exit",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794053221.692519,
+      "type": "supervisor_detected_exit",
+      "name": "academic-1"
+    },
+    {
+      "ts": 1794053226.6919148,
+      "type": "restart_start",
+      "name": "student-1"
+    },
+    {
+      "ts": 1794053226.6971319,
+      "type": "restart_start",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794053226.7053702,
+      "type": "restart_start",
+      "name": "academic-1"
+    },
+    {
+      "ts": 1794053227.5065866,
+      "type": "restart_ready",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794053227.587577,
+      "type": "restart_ready",
+      "name": "academic-1"
+    },
+    {
+      "ts": 1794053227.61768,
+      "type": "restart_ready",
+      "name": "student-1"
+    }
+  ],
+  "observations": [
+    "Node A (student-1, payment-1, academic-1) was lost; node B replicas kept serving through the gateway."
+  ],
+  "alerts": {
+    "false_alerts_before_fault": [],
+    "fired_after_fault": [
+      "InstanceDown",
+      "InstanceRecentlyDown"
+    ],
+    "first_firing_after_fault_s": {
+      "InstanceDown": 3.0,
+      "InstanceRecentlyDown": 7.01
+    },
+    "detection_by_alert_s": 3.0,
+    "timeline": [
+      {
+        "ts": 1794053222.6189342,
+        "alert": "InstanceDown",
+        "state": "pending",
+        "rel_s": 1.0
+      },
+      {
+        "ts": 1794053224.6205356,
+        "alert": "InstanceDown",
+        "state": "firing",
+        "rel_s": 3.0
+      },
+      {
+        "ts": 1794053228.6253822,
+        "alert": "InstanceRecentlyDown",
+        "state": "firing",
+        "rel_s": 7.01
+      },
+      {
+        "ts": 1794053228.6253822,
+        "alert": "InstanceDown",
+        "state": "resolved",
+        "rel_s": 7.01
+      },
+      {
+        "ts": 1794053257.6495862,
+        "alert": "InstanceRecentlyDown",
+        "state": "resolved",
+        "rel_s": 36.03
+      }
+    ]
+  },
+  "killed_instances": [
+    "student-1",
+    "payment-1",
+    "academic-1"
+  ],
+  "operator_delay_s": null,
+  "node_restart_delay_s": 5.0
+}

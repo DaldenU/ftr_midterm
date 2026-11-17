@@ -1,0 +1,431 @@
+{
+  "mode": "baseline",
+  "datetime": "2026-11-07T12:51:14+00:00",
+  "duration_s": 240.0,
+  "mttf_component_injected_s": 15.0,
+  "operator_delay_s": 10.0,
+  "restart_delay_s": null,
+  "instances": 3,
+  "seed": 7,
+  "kills": [
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794055875.2044992,
+      "t_ready": 1794055885.6169415,
+      "repair_s": 10.412,
+      "t_kill_rel": 0.72
+    },
+    {
+      "instance": "student-1",
+      "service": "student",
+      "t_kill": 1794055880.3586946,
+      "t_ready": 1794055890.784454,
+      "repair_s": 10.426,
+      "t_kill_rel": 5.87
+    },
+    {
+      "instance": "academic-1",
+      "service": "academic",
+      "t_kill": 1794055887.3036463,
+      "t_ready": 1794055897.7251687,
+      "repair_s": 10.422,
+      "t_kill_rel": 12.81
+    },
+    {
+      "instance": "academic-1",
+      "service": "academic",
+      "t_kill": 1794055898.476453,
+      "t_ready": 1794055908.897253,
+      "repair_s": 10.421,
+      "t_kill_rel": 23.99
+    },
+    {
+      "instance": "student-1",
+      "service": "student",
+      "t_kill": 1794055898.598901,
+      "t_ready": 1794055909.0660636,
+      "repair_s": 10.467,
+      "t_kill_rel": 24.11
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794055904.532978,
+      "t_ready": 1794055914.9545324,
+      "repair_s": 10.422,
+      "t_kill_rel": 30.04
+    },
+    {
+      "instance": "student-1",
+      "service": "student",
+      "t_kill": 1794055911.2410483,
+      "t_ready": 1794055921.6700754,
+      "repair_s": 10.429,
+      "t_kill_rel": 36.75
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794055919.4117348,
+      "t_ready": 1794055929.9273796,
+      "repair_s": 10.516,
+      "t_kill_rel": 44.92
+    },
+    {
+      "instance": "student-1",
+      "service": "student",
+      "t_kill": 1794055929.5875323,
+      "t_ready": 1794055939.9616263,
+      "repair_s": 10.374,
+      "t_kill_rel": 55.1
+    },
+    {
+      "instance": "academic-1",
+      "service": "academic",
+      "t_kill": 1794055929.6845806,
+      "t_ready": 1794055940.2259257,
+      "repair_s": 10.541,
+      "t_kill_rel": 55.2
+    },
+    {
+      "instance": "student-1",
+      "service": "student",
+      "t_kill": 1794055941.2014112,
+      "t_ready": 1794055951.573834,
+      "repair_s": 10.372,
+      "t_kill_rel": 66.71
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794055944.8143287,
+      "t_ready": 1794055955.237167,
+      "repair_s": 10.423,
+      "t_kill_rel": 70.33
+    },
+    {
+      "instance": "academic-1",
+      "service": "academic",
+      "t_kill": 1794055949.293782,
+      "t_ready": 1794055959.7193666,
+      "repair_s": 10.426,
+      "t_kill_rel": 74.8
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794055960.8741648,
+      "t_ready": 1794055971.3494332,
+      "repair_s": 10.475,
+      "t_kill_rel": 86.39
+    },
+    {
+      "instance": "student-1",
+      "service": "student",
+      "t_kill": 1794055975.7938085,
+      "t_ready": 1794055986.181331,
+      "repair_s": 10.388,
+      "t_kill_rel": 101.3
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794055976.1537297,
+      "t_ready": 1794055986.6487174,
+      "repair_s": 10.495,
+      "t_kill_rel": 101.66
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794055995.044146,
+      "t_ready": 1794056005.4134405,
+      "repair_s": 10.369,
+      "t_kill_rel": 120.56
+    },
+    {
+      "instance": "student-1",
+      "service": "student",
+      "t_kill": 1794055996.3756518,
+      "t_ready": 1794056006.790059,
+      "repair_s": 10.414,
+      "t_kill_rel": 121.89
+    },
+    {
+      "instance": "academic-1",
+      "service": "academic",
+      "t_kill": 1794056013.1997256,
+      "t_ready": 1794056023.6241908,
+      "repair_s": 10.424,
+      "t_kill_rel": 138.71
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794056017.5081139,
+      "t_ready": 1794056027.9722357,
+      "repair_s": 10.464,
+      "t_kill_rel": 143.02
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794056031.5330653,
+      "t_ready": 1794056041.906924,
+      "repair_s": 10.374,
+      "t_kill_rel": 157.04
+    },
+    {
+      "instance": "student-1",
+      "service": "student",
+      "t_kill": 1794056040.6396048,
+      "t_ready": 1794056051.064583,
+      "repair_s": 10.425,
+      "t_kill_rel": 166.15
+    },
+    {
+      "instance": "academic-1",
+      "service": "academic",
+      "t_kill": 1794056044.4358222,
+      "t_ready": 1794056054.912928,
+      "repair_s": 10.477,
+      "t_kill_rel": 169.95
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794056044.7455256,
+      "t_ready": 1794056055.2171354,
+      "repair_s": 10.472,
+      "t_kill_rel": 170.26
+    },
+    {
+      "instance": "student-1",
+      "service": "student",
+      "t_kill": 1794056053.5490077,
+      "t_ready": 1794056063.9620268,
+      "repair_s": 10.413,
+      "t_kill_rel": 179.06
+    },
+    {
+      "instance": "academic-1",
+      "service": "academic",
+      "t_kill": 1794056056.9784038,
+      "t_ready": 1794056067.4056942,
+      "repair_s": 10.427,
+      "t_kill_rel": 182.49
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794056059.1453278,
+      "t_ready": 1794056069.6233072,
+      "repair_s": 10.478,
+      "t_kill_rel": 184.66
+    },
+    {
+      "instance": "academic-1",
+      "service": "academic",
+      "t_kill": 1794056074.1273818,
+      "t_ready": 1794056084.544965,
+      "repair_s": 10.418,
+      "t_kill_rel": 199.64
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794056082.8728018,
+      "t_ready": 1794056093.30052,
+      "repair_s": 10.428,
+      "t_kill_rel": 208.38
+    },
+    {
+      "instance": "academic-1",
+      "service": "academic",
+      "t_kill": 1794056095.822584,
+      "t_ready": 1794056106.251584,
+      "repair_s": 10.429,
+      "t_kill_rel": 221.33
+    },
+    {
+      "instance": "payment-1",
+      "service": "payment",
+      "t_kill": 1794056100.899819,
+      "t_ready": 1794056111.3756754,
+      "repair_s": 10.476,
+      "t_kill_rel": 226.41
+    }
+  ],
+  "services": {
+    "student": {
+      "outages": [
+        [
+          5.91,
+          16.32
+        ],
+        [
+          24.13,
+          34.54
+        ],
+        [
+          36.75,
+          47.16
+        ],
+        [
+          55.17,
+          65.48
+        ],
+        [
+          66.79,
+          77.1
+        ],
+        [
+          101.34,
+          111.75
+        ],
+        [
+          121.97,
+          132.28
+        ],
+        [
+          166.22,
+          176.63
+        ],
+        [
+          179.13,
+          189.44
+        ]
+      ],
+      "downtime_s": 93.308,
+      "availability_lenient": 0.61118,
+      "availability_strict": 0.61118
+    },
+    "payment": {
+      "outages": [
+        [
+          0.71,
+          11.13
+        ],
+        [
+          30.07,
+          40.48
+        ],
+        [
+          44.98,
+          55.41
+        ],
+        [
+          70.32,
+          80.73
+        ],
+        [
+          86.44,
+          96.85
+        ],
+        [
+          101.66,
+          112.18
+        ],
+        [
+          120.59,
+          130.91
+        ],
+        [
+          143.03,
+          153.54
+        ],
+        [
+          157.04,
+          167.45
+        ],
+        [
+          170.25,
+          180.78
+        ],
+        [
+          184.68,
+          195.2
+        ],
+        [
+          208.42,
+          218.83
+        ],
+        [
+          226.44,
+          236.95
+        ]
+      ],
+      "downtime_s": 135.784,
+      "availability_lenient": 0.43429,
+      "availability_strict": 0.43429
+    },
+    "academic": {
+      "outages": [
+        [
+          5.93,
+          23.27
+        ],
+        [
+          24.07,
+          34.58
+        ],
+        [
+          36.79,
+          47.2
+        ],
+        [
+          55.11,
+          65.72
+        ],
+        [
+          66.73,
+          85.25
+        ],
+        [
+          101.37,
+          111.68
+        ],
+        [
+          121.9,
+          132.33
+        ],
+        [
+          138.74,
+          149.15
+        ],
+        [
+          166.17,
+          192.91
+        ],
+        [
+          199.72,
+          210.03
+        ],
+        [
+          221.34,
+          231.75
+        ]
+      ],
+      "downtime_s": 146.018,
+      "availability_lenient": 0.39174,
+      "availability_strict": 0.39174
+    }
+  },
+  "requests": {
+    "total": 4800,
+    "success": 2474,
+    "failed": 2326,
+    "error_rate": 0.4846,
+    "shed": 0,
+    "hard_failed": 2326,
+    "hard_error_rate": 0.4846,
+    "recovered": 0,
+    "degraded": 0,
+    "replays": 0,
+    "p50_ms": 9.1,
+    "p95_ms": 36.4,
+    "p99_ms": 41.5,
+    "p95_all_ms": 19.8
+  }
+}

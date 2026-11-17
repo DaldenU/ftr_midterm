@@ -12,12 +12,14 @@ from __future__ import annotations
 
 import itertools
 import threading
+import uuid
 
 import httpx
 
 from .config import Settings
 from .logging import current_state
 from .resilience import CircuitBreaker, CircuitOpenError, retry_call
+from . import security as sec
 
 
 class ServiceUnavailable(Exception):
@@ -51,8 +53,18 @@ class ServiceClient:
         if old != "closed" and new == "closed":
             self.m.recovery_events.labels(self.s.service_name, self.s.instance_id, "breaker_closed").inc()
 
+    def _headers(self, request_id: str) -> dict:
+        st = current_state()
+        rid = request_id or st.request_id or uuid.uuid4().hex[:12]   # background jobs get their own trace id
+        h = {"X-Request-ID": rid}
+        if st.span_id:
+            h["X-Parent-Span-ID"] = st.span_id            # distributed trace: caller span -> callee parent
+        if self.s.is_secure:                              # C3: authenticated service identity
+            h["X-Internal-Auth"] = sec.sign_internal(self.s.internal_auth_secret, self.s.service_name, rid or "")
+        return h
+
     def get(self, path: str, request_id: str = "") -> httpx.Response:
-        headers = {"X-Request-ID": request_id} if request_id else {}
+        headers = self._headers(request_id)
         if not self.s.is_ft:
             # naive: single endpoint, long timeout, exceptions propagate
             return self.http.get(self.urls[0] + path, headers=headers)
@@ -63,6 +75,9 @@ class ServiceClient:
 
         def one_attempt() -> httpx.Response:
             url = self.urls[next(counter) % len(self.urls)]   # failover to next replica on retry
+            if self.s.is_secure:                                # fresh timestamp per attempt (replay window)
+                headers["X-Internal-Auth"] = sec.sign_internal(self.s.internal_auth_secret, self.s.service_name,
+                                                               headers["X-Request-ID"])
             try:
                 r = self.http.get(url + path, headers=headers)
             except httpx.HTTPError as exc:

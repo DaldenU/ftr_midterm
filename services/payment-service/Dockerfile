@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY shared /app/shared
 COPY services/payment-service/app.py /app/app.py
-RUN useradd -r -u 10001 app && chown -R app /app
+RUN useradd -r -u 10001 app   # non-root; code stays root-owned and read-only for the app user
 USER app
 EXPOSE 8000
 HEALTHCHECK --interval=5s --timeout=2s --start-period=10s --retries=3 \

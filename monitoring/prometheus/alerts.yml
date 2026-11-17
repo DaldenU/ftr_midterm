@@ -1,29 +1,79 @@
-# Fault DETECTION rules: monitoring is what turns a silent fault into a known failure.
+# Incident indicators / alert rules (final project).
+# Monitoring is what turns a silent fault into a known failure: every rule maps to
+# one fault class of the fault model (docs/final/fault_model.md) and one runbook action.
+# Timing: scrape + evaluation every 1 s in the experiment harness (2 s in Compose), so the
+# expected detection delay is roughly  scrape interval + rate window effect + `for`.
 groups:
-  - name: availability
+  - name: uis-availability
     rules:
       - alert: InstanceDown
-        expr: up == 0
-        for: 5s
-        labels: {severity: critical}
-        annotations: {summary: "{{ $labels.job }} {{ $labels.instance }} is down (scrape failed)"}
-      - alert: DatabaseUnreachable
-        expr: db_up == 0
-        for: 5s
-        labels: {severity: critical}
-        annotations: {summary: "{{ $labels.service }} {{ $labels.instance }} lost its database connection"}
-      - alert: HighErrorRatio
-        expr: sum(rate(http_requests_failed_total[30s])) / clamp_min(sum(rate(http_requests_success_total[30s]) + rate(http_requests_failed_total[30s])), 0.001) > 0.05
-        for: 10s
-        labels: {severity: warning}
-        annotations: {summary: "More than 5% of requests fail"}
-      - alert: CircuitBreakerOpen
-        expr: circuit_breaker_state == 2
+        expr: up{job=~".*-service"} == 0
         for: 2s
-        labels: {severity: warning}
-        annotations: {summary: "Breaker {{ $labels.target }} OPEN on {{ $labels.instance }}: dependency degraded"}
-      - alert: LoadShedding
-        expr: rate(load_shed_total[30s]) > 0 or rate(gateway_load_shed_total[30s]) > 0
-        for: 5s
-        labels: {severity: info}
-        annotations: {summary: "Overload: requests are being shed"}
+        labels: {severity: critical, fault: "F1/F2 process or node crash"}
+        annotations:
+          summary: "{{ $labels.name }} is down (scrape failed)"
+          runbook: "Gateway ejects it automatically; check supervisor/ReplicaSet restarted it; inspect last log lines of the instance."
+      - alert: InstanceRecentlyDown
+        expr: min_over_time(up{job=~".*-service"}[30s]) == 0 and on(job, name) up{job=~".*-service"} == 1
+        for: 0s
+        labels: {severity: warning, fault: "F1/F2 masked crash (auto-restarted)"}
+        annotations:
+          summary: "{{ $labels.name }} failed a scrape in the last 30 s and is back (crash masked by restart/failover)"
+          runbook: "Masked fault: check restart count and logs of the instance; repeated firing = crash loop."
+      - alert: DatabaseUnreachable
+        expr: count(db_up{job=~".*-service"} == 0) >= 1
+        for: 2s
+        labels: {severity: critical, fault: "F3/F4 database crash or host loss"}
+        annotations:
+          summary: "{{ $value }} service instance(s) cannot reach PostgreSQL"
+          runbook: "Reads are served from cache (X-Degraded), writes retry within budget; check pg primary, promote standby if primary host is lost."
+      - alert: HighErrorRatio
+        expr: |
+          sum(rate(gateway_requests_total{status=~"5..", service!="edge"}[10s]))
+            / clamp_min(sum(rate(gateway_requests_total{service!="edge"}[10s])), 0.001) > 0.05
+        for: 3s
+        labels: {severity: warning, fault: "any user-visible failure"}
+        annotations:
+          summary: "More than 5% of proxied requests fail ({{ $value | humanizePercentage }})"
+          runbook: "Filter gateway JSON logs by status>=500, follow request_id/trace_id into service logs to find the failing hop."
+      - alert: HighLatencyP95
+        expr: histogram_quantile(0.95, sum by (le) (rate(gateway_request_duration_seconds_bucket[10s]))) > 1.0
+        for: 3s
+        labels: {severity: warning, fault: "F5 slow dependency / F9 overload"}
+        annotations:
+          summary: "p95 latency at the gateway is {{ $value }}s (> 1 s SLO)"
+          runbook: "Check CircuitBreakerOpen and LoadSheddingActive; scale out (HPA) or find the slow dependency via trace spans."
+  - name: uis-resilience
+    rules:
+      - alert: CircuitBreakerOpen
+        expr: max(circuit_breaker_state) == 2
+        for: 1s
+        labels: {severity: warning, fault: "F5/F6 dependency failing"}
+        annotations:
+          summary: "A circuit breaker is OPEN: a dependency is failing and callers fail fast / degrade"
+          runbook: "Identify target label of circuit_breaker_state; responses carry X-Degraded until it closes."
+      - alert: DegradedResponses
+        expr: sum(rate(degraded_responses_total[10s])) > 0.5
+        for: 2s
+        labels: {severity: info, fault: "masked fault"}
+        annotations:
+          summary: "Responses are served in degraded mode ({{ $value }}/s)"
+          runbook: "Fault is masked; find the reason label (stale-cache, student-unverified, overload) and fix the dependency."
+      - alert: LoadSheddingActive
+        expr: (sum(rate(load_shed_total[10s])) or vector(0)) + (sum(rate(gateway_load_shed_total[10s])) or vector(0)) > 0.5
+        for: 2s
+        labels: {severity: info, fault: "F9 overload"}
+        annotations:
+          summary: "Admission control is rejecting requests (503 + Retry-After)"
+          runbook: "Capacity exceeded: scale out or reduce offered load; clients must honour Retry-After."
+  - name: uis-security
+    rules:
+      - alert: SecurityDenialSpike
+        expr: |
+          (sum(increase(gateway_security_events_total[15s])) or vector(0))
+            + (sum(increase(security_events_total[15s])) or vector(0)) >= 10
+        for: 0s
+        labels: {severity: critical, fault: "T1-T7 misuse / intrusion attempt"}
+        annotations:
+          summary: "{{ $value }} denied requests in 15 s (auth/RBAC/BOLA/validation/rate-limit)"
+          runbook: "Group edge_denied logs by actor and client_ip; verify audit chain (verify_audit.py); block the principal if abusive."

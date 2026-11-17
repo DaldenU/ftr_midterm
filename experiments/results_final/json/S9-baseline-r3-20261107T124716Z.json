@@ -1,0 +1,1261 @@
+{
+  "experiment_id": "S9-baseline-r3-20261107T124716Z",
+  "scenario": "S9",
+  "repetition": 3,
+  "datetime": "2026-11-07T12:47:17+00:00",
+  "system_version": "baseline-1.0",
+  "mode": "baseline",
+  "failure_injected": "67 misuse requests in 8 categories + 15 brute-force logins + 200 req/s flood for 6s by one principal",
+  "initial_state": {
+    "replicas_per_service": 1,
+    "db": "up",
+    "legit_rate_rps": 20.0,
+    "security_controls": false
+  },
+  "failure_start": 1794055645.943,
+  "failure_start_rel_s": 8.03,
+  "detection_time_s": 4.251,
+  "detection_monitor_s": null,
+  "detection_internal_s": null,
+  "detection_client_s": 4.251,
+  "recovery_start": null,
+  "recovery_end": null,
+  "recovery_duration_s": null,
+  "repair_action_s": null,
+  "total_requests": 880,
+  "successful_requests": 843,
+  "failed_requests": 37,
+  "shed_requests": 0,
+  "hard_failed_requests": 37,
+  "recovered_requests": 0,
+  "degraded_requests": 0,
+  "duplicate_requests": 0,
+  "duplicates_prevented": 0,
+  "window_total": 719,
+  "window_failed": 37,
+  "window_success": 682,
+  "window_error_rate": 0.0515,
+  "user_visible_downtime_s": {
+    "student": 2.0,
+    "payment": 0,
+    "academic": 2.1
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 2.0,
+    "payment": 0,
+    "academic": 2.1
+  },
+  "probe_availability_strict": {
+    "student": 0.944,
+    "payment": 1.0,
+    "academic": 0.9413
+  },
+  "probe_availability_lenient": {
+    "student": 0.944,
+    "payment": 1.0,
+    "academic": 0.9413
+  },
+  "latency": {
+    "p50_ms": 11.4,
+    "p95_ms": 56.2,
+    "p99_ms": 84.7
+  },
+  "per_op": {
+    "get_account": {
+      "total": 37,
+      "success": 37,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 8.5,
+      "p95_ms": 38.3,
+      "p99_ms": 66.2,
+      "p95_all_ms": 38.3
+    },
+    "get_student": {
+      "total": 403,
+      "success": 380,
+      "failed": 23,
+      "error_rate": 0.0571,
+      "shed": 0,
+      "hard_failed": 23,
+      "hard_error_rate": 0.0571,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 8.6,
+      "p95_ms": 44.3,
+      "p99_ms": 66.2,
+      "p95_all_ms": 43.5
+    },
+    "get_transcript": {
+      "total": 175,
+      "success": 166,
+      "failed": 9,
+      "error_rate": 0.0514,
+      "shed": 0,
+      "hard_failed": 9,
+      "hard_error_rate": 0.0514,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 14.7,
+      "p95_ms": 55.6,
+      "p99_ms": 76.8,
+      "p95_all_ms": 54.7
+    },
+    "post_grade": {
+      "total": 135,
+      "success": 135,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 9.8,
+      "p95_ms": 37.7,
+      "p99_ms": 54.4,
+      "p95_all_ms": 37.7
+    },
+    "post_payment": {
+      "total": 130,
+      "success": 125,
+      "failed": 5,
+      "error_rate": 0.0385,
+      "shed": 0,
+      "hard_failed": 5,
+      "hard_error_rate": 0.0385,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 38.1,
+      "p95_ms": 86.6,
+      "p99_ms": 105.8,
+      "p95_all_ms": 86.2
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 3,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 134,
+    "duplicate_academic_records": 0,
+    "academic_records": 150,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "attack_rows": 24,
+    "audit_events": null,
+    "audit_deny_events": null,
+    "audit_broken_links": 0,
+    "violations": {
+      "duplicate_payments": 3,
+      "attack_rows": 24
+    },
+    "consistent": false
+  },
+  "consistent": false,
+  "stack_events": [
+    {
+      "ts": 1794055652.2123969,
+      "type": "fault_cleared",
+      "name": "student",
+      "latency_ms": 0,
+      "error_rate": 0,
+      "fail_all": false
+    }
+  ],
+  "observations": [
+    "Admin backdoor succeeded: student-1 answered 503 to everybody until the operator cleared it (2 s)."
+  ],
+  "alerts": {
+    "false_alerts_before_fault": [],
+    "fired_after_fault": [
+      "HighErrorRatio"
+    ],
+    "first_firing_after_fault_s": {
+      "HighErrorRatio": 8.75
+    },
+    "detection_by_alert_s": 8.75,
+    "timeline": [
+      {
+        "ts": 1794055651.6824796,
+        "alert": "HighErrorRatio",
+        "state": "pending",
+        "rel_s": 5.74
+      },
+      {
+        "ts": 1794055654.6896331,
+        "alert": "HighErrorRatio",
+        "state": "firing",
+        "rel_s": 8.75
+      },
+      {
+        "ts": 1794055658.7152762,
+        "alert": "HighErrorRatio",
+        "state": "resolved",
+        "rel_s": 12.77
+      }
+    ]
+  },
+  "attacks": [
+    {
+      "category": "authentication",
+      "name": "no_token",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.017,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "forged_signature",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.081,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "alg_none",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.138,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "expired_token",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.194,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "tampered_claims",
+      "status": 201,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.26,
+      "body": "{\"record_id\":27,\"student_id\":\"S0002\",\"course_code\":\"ATK-TMP0\",\"term\":\"2026F\",\"grade\":100.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:26.207164+05:00\"}"
+    },
+    {
+      "category": "privilege_escalation",
+      "name": "student_posts_grade",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.319,
+      "body": "{\"record_id\":29,\"student_id\":\"S0001\",\"course_code\":\"ATK-VG0\",\"term\":\"2026F\",\"grade\":100.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:26.268210+05:00\"}"
+    },
+    {
+      "category": "privilege_escalation",
+      "name": "student_registers_student",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.379,
+      "body": "{\"student_id\":\"SFF448462\",\"full_name\":\"Fake Student\",\"email\":\"atk-reg0@evil.test\",\"program\":\"General\",\"created_at\":\"2026-11-07T17:47:26.327506+05:00\"}"
+    },
+    {
+      "category": "privilege_escalation",
+      "name": "student_batch_grades",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.438,
+      "body": "{\"batch_id\":\"Bd8c63854\",\"inserted\":1,\"total\":1}"
+    },
+    {
+      "category": "bola",
+      "name": "read_other_student",
+      "status": 200,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.496,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "bola",
+      "name": "read_other_transcript",
+      "status": 200,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.557,
+      "body": "{\"student_id\":\"S0005\",\"student\":{\"student_id\":\"S0005\",\"full_name\":\"Student 5\",\"email\":\"s0005@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+0"
+    },
+    {
+      "category": "bola",
+      "name": "read_other_account",
+      "status": 200,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.622,
+      "body": "{\"student_id\":\"S0008\",\"total_paid\":0.0}"
+    },
+    {
+      "category": "bola",
+      "name": "pay_for_other_student",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.682,
+      "body": "{\"payment_id\":\"pay_dbcec290b7f94e57\",\"idempotency_key\":\"ATK-BOLA-0-3\",\"student_id\":\"S0011\",\"invoice_id\":\"INV-ATK-BOLA-0\",\"amount\":10.0,\"currency\":\"KZT\",\"status\""
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "direct_backend_read",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.769,
+      "body": "{\"student_id\":\"S0002\",\"total_paid\":2000.0}"
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "direct_backend_grade_write",
+      "status": 201,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.825,
+      "body": "{\"record_id\":34,\"student_id\":\"S0002\",\"course_code\":\"ATK-DIR0\",\"term\":\"2026F\",\"grade\":100.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:26.773166+05:00\"}"
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "forged_internal_auth",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 0.884,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "sqli_in_path",
+      "status": 404,
+      "expected": [
+        422,
+        403,
+        404
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 0.941,
+      "body": "{\"detail\":\"student not found\"}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "xss_in_name",
+      "status": 201,
+      "expected": [
+        422
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.0,
+      "body": "{\"student_id\":\"S40A81934\",\"full_name\":\"<script>alert(1)</script>\",\"email\":\"atk-xss0-3@evil.test\",\"program\":\"General\",\"created_at\":\"2026-11-07T17:47:26.956542+05"
+    },
+    {
+      "category": "invalid_input",
+      "name": "negative_amount",
+      "status": 422,
+      "expected": [
+        422
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 1.07,
+      "body": "{\"detail\":[{\"type\":\"greater_than\",\"loc\":[\"body\",\"amount\"],\"msg\":\"Input should be greater than 0\",\"input\":-5000,\"ctx\":{\"gt\":0.0}}]}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "grade_out_of_range",
+      "status": 422,
+      "expected": [
+        422
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 1.124,
+      "body": "{\"detail\":[{\"type\":\"less_than_equal\",\"loc\":[\"body\",\"grade\"],\"msg\":\"Input should be less than or equal to 100\",\"input\":150,\"ctx\":{\"le\":100.0}}]}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "oversized_body",
+      "status": 201,
+      "expected": [
+        413
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.18,
+      "body": "{\"record_id\":36,\"student_id\":\"S0001\",\"course_code\":\"ATK-BIG0\",\"term\":\"2026F\",\"grade\":50.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:27.131475+05:00\"}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "malformed_json",
+      "status": 422,
+      "expected": [
+        400,
+        403,
+        422
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 1.242,
+      "body": "{\"detail\":[{\"type\":\"json_invalid\",\"loc\":[\"body\",63],\"msg\":\"JSON decode error\",\"input\":{},\"ctx\":{\"error\":\"Expecting value\"}}]}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "idempotency_key_tamper",
+      "status": 201,
+      "expected": [
+        409,
+        422
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.34,
+      "body": "{\"payment_id\":\"pay_340074e5072f40f6\",\"idempotency_key\":\"TMP-0-3-1794055645\",\"student_id\":\"S0001\",\"invoice_id\":\"INV-TMP-0-1794055645\",\"amount\":50000.0,\"currency\""
+    },
+    {
+      "category": "authentication",
+      "name": "no_token",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.424,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "forged_signature",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.487,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "alg_none",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.547,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "expired_token",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.607,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "tampered_claims",
+      "status": 201,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.666,
+      "body": "{\"record_id\":41,\"student_id\":\"S0002\",\"course_code\":\"ATK-TMP1\",\"term\":\"2026F\",\"grade\":100.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:27.614046+05:00\"}"
+    },
+    {
+      "category": "privilege_escalation",
+      "name": "student_posts_grade",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.725,
+      "body": "{\"record_id\":42,\"student_id\":\"S0001\",\"course_code\":\"ATK-VG1\",\"term\":\"2026F\",\"grade\":100.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:27.675341+05:00\"}"
+    },
+    {
+      "category": "privilege_escalation",
+      "name": "student_registers_student",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.786,
+      "body": "{\"student_id\":\"SD65FC8F0\",\"full_name\":\"Fake Student\",\"email\":\"atk-reg1@evil.test\",\"program\":\"General\",\"created_at\":\"2026-11-07T17:47:27.733183+05:00\"}"
+    },
+    {
+      "category": "privilege_escalation",
+      "name": "student_batch_grades",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.843,
+      "body": "{\"batch_id\":\"Bac05000b\",\"inserted\":1,\"total\":1}"
+    },
+    {
+      "category": "bola",
+      "name": "read_other_student",
+      "status": 200,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.902,
+      "body": "{\"student_id\":\"S0003\",\"full_name\":\"Student 3\",\"email\":\"s0003@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "bola",
+      "name": "read_other_transcript",
+      "status": 200,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 1.966,
+      "body": "{\"student_id\":\"S0006\",\"student\":{\"student_id\":\"S0006\",\"full_name\":\"Student 6\",\"email\":\"s0006@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+0"
+    },
+    {
+      "category": "bola",
+      "name": "read_other_account",
+      "status": 200,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.029,
+      "body": "{\"student_id\":\"S0009\",\"total_paid\":0.0}"
+    },
+    {
+      "category": "bola",
+      "name": "pay_for_other_student",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.09,
+      "body": "{\"payment_id\":\"pay_f50db6a829ee428f\",\"idempotency_key\":\"ATK-BOLA-1-3\",\"student_id\":\"S0011\",\"invoice_id\":\"INV-ATK-BOLA-1\",\"amount\":10.0,\"currency\":\"KZT\",\"status\""
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "direct_backend_read",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.182,
+      "body": "{\"student_id\":\"S0002\",\"total_paid\":3000.0}"
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "direct_backend_grade_write",
+      "status": 201,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.238,
+      "body": "{\"record_id\":46,\"student_id\":\"S0002\",\"course_code\":\"ATK-DIR1\",\"term\":\"2026F\",\"grade\":100.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:28.183947+05:00\"}"
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "forged_internal_auth",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.294,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "sqli_in_path",
+      "status": 404,
+      "expected": [
+        422,
+        403,
+        404
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 2.353,
+      "body": "{\"detail\":\"student not found\"}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "xss_in_name",
+      "status": 201,
+      "expected": [
+        422
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.414,
+      "body": "{\"student_id\":\"S47524EF0\",\"full_name\":\"<script>alert(1)</script>\",\"email\":\"atk-xss1-3@evil.test\",\"program\":\"General\",\"created_at\":\"2026-11-07T17:47:28.362024+05"
+    },
+    {
+      "category": "invalid_input",
+      "name": "negative_amount",
+      "status": 422,
+      "expected": [
+        422
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 2.474,
+      "body": "{\"detail\":[{\"type\":\"greater_than\",\"loc\":[\"body\",\"amount\"],\"msg\":\"Input should be greater than 0\",\"input\":-5000,\"ctx\":{\"gt\":0.0}}]}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "grade_out_of_range",
+      "status": 422,
+      "expected": [
+        422
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 2.528,
+      "body": "{\"detail\":[{\"type\":\"less_than_equal\",\"loc\":[\"body\",\"grade\"],\"msg\":\"Input should be less than or equal to 100\",\"input\":150,\"ctx\":{\"le\":100.0}}]}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "oversized_body",
+      "status": 201,
+      "expected": [
+        413
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.582,
+      "body": "{\"record_id\":50,\"student_id\":\"S0001\",\"course_code\":\"ATK-BIG1\",\"term\":\"2026F\",\"grade\":50.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:28.530304+05:00\"}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "malformed_json",
+      "status": 422,
+      "expected": [
+        400,
+        403,
+        422
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 2.641,
+      "body": "{\"detail\":[{\"type\":\"json_invalid\",\"loc\":[\"body\",63],\"msg\":\"JSON decode error\",\"input\":{},\"ctx\":{\"error\":\"Expecting value\"}}]}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "idempotency_key_tamper",
+      "status": 201,
+      "expected": [
+        409,
+        422
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.744,
+      "body": "{\"payment_id\":\"pay_7edc3c350b30439a\",\"idempotency_key\":\"TMP-1-3-1794055645\",\"student_id\":\"S0001\",\"invoice_id\":\"INV-TMP-1-1794055645\",\"amount\":50000.0,\"currency\""
+    },
+    {
+      "category": "authentication",
+      "name": "no_token",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.831,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "forged_signature",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.89,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "alg_none",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 2.949,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "expired_token",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.007,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "authentication",
+      "name": "tampered_claims",
+      "status": 201,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.068,
+      "body": "{\"record_id\":53,\"student_id\":\"S0002\",\"course_code\":\"ATK-TMP2\",\"term\":\"2026F\",\"grade\":100.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:29.014991+05:00\"}"
+    },
+    {
+      "category": "privilege_escalation",
+      "name": "student_posts_grade",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.125,
+      "body": "{\"record_id\":54,\"student_id\":\"S0001\",\"course_code\":\"ATK-VG2\",\"term\":\"2026F\",\"grade\":100.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:29.072730+05:00\"}"
+    },
+    {
+      "category": "privilege_escalation",
+      "name": "student_registers_student",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.183,
+      "body": "{\"student_id\":\"S4468EB42\",\"full_name\":\"Fake Student\",\"email\":\"atk-reg2@evil.test\",\"program\":\"General\",\"created_at\":\"2026-11-07T17:47:29.130253+05:00\"}"
+    },
+    {
+      "category": "privilege_escalation",
+      "name": "student_batch_grades",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.24,
+      "body": "{\"batch_id\":\"Bd6745bf7\",\"inserted\":1,\"total\":1}"
+    },
+    {
+      "category": "bola",
+      "name": "read_other_student",
+      "status": 200,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.296,
+      "body": "{\"student_id\":\"S0004\",\"full_name\":\"Student 4\",\"email\":\"s0004@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "bola",
+      "name": "read_other_transcript",
+      "status": 200,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.358,
+      "body": "{\"student_id\":\"S0007\",\"student\":{\"student_id\":\"S0007\",\"full_name\":\"Student 7\",\"email\":\"s0007@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+0"
+    },
+    {
+      "category": "bola",
+      "name": "read_other_account",
+      "status": 200,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.42,
+      "body": "{\"student_id\":\"S0010\",\"total_paid\":0.0}"
+    },
+    {
+      "category": "bola",
+      "name": "pay_for_other_student",
+      "status": 201,
+      "expected": [
+        403
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.483,
+      "body": "{\"payment_id\":\"pay_fc9d700edfe94701\",\"idempotency_key\":\"ATK-BOLA-2-3\",\"student_id\":\"S0011\",\"invoice_id\":\"INV-ATK-BOLA-2\",\"amount\":10.0,\"currency\":\"KZT\",\"status\""
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "direct_backend_read",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.571,
+      "body": "{\"student_id\":\"S0002\",\"total_paid\":3000.0}"
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "direct_backend_grade_write",
+      "status": 201,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.627,
+      "body": "{\"record_id\":60,\"student_id\":\"S0002\",\"course_code\":\"ATK-DIR2\",\"term\":\"2026F\",\"grade\":100.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:29.575443+05:00\"}"
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "forged_internal_auth",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.688,
+      "body": "{\"student_id\":\"S0002\",\"full_name\":\"Student 2\",\"email\":\"s0002@uni.test\",\"program\":\"CS\",\"created_at\":\"2026-11-07T17:47:16.115424+05:00\"}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "sqli_in_path",
+      "status": 404,
+      "expected": [
+        422,
+        403,
+        404
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 3.744,
+      "body": "{\"detail\":\"student not found\"}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "xss_in_name",
+      "status": 201,
+      "expected": [
+        422
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.8,
+      "body": "{\"student_id\":\"SF6389C21\",\"full_name\":\"<script>alert(1)</script>\",\"email\":\"atk-xss2-3@evil.test\",\"program\":\"General\",\"created_at\":\"2026-11-07T17:47:29.749638+05"
+    },
+    {
+      "category": "invalid_input",
+      "name": "negative_amount",
+      "status": 422,
+      "expected": [
+        422
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 3.859,
+      "body": "{\"detail\":[{\"type\":\"greater_than\",\"loc\":[\"body\",\"amount\"],\"msg\":\"Input should be greater than 0\",\"input\":-5000,\"ctx\":{\"gt\":0.0}}]}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "grade_out_of_range",
+      "status": 422,
+      "expected": [
+        422
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 3.913,
+      "body": "{\"detail\":[{\"type\":\"less_than_equal\",\"loc\":[\"body\",\"grade\"],\"msg\":\"Input should be less than or equal to 100\",\"input\":150,\"ctx\":{\"le\":100.0}}]}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "oversized_body",
+      "status": 201,
+      "expected": [
+        413
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 3.966,
+      "body": "{\"record_id\":62,\"student_id\":\"S0001\",\"course_code\":\"ATK-BIG2\",\"term\":\"2026F\",\"grade\":50.0,\"batch_id\":null,\"created_at\":\"2026-11-07T17:47:29.914468+05:00\"}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "malformed_json",
+      "status": 422,
+      "expected": [
+        400,
+        403,
+        422
+      ],
+      "blocked": true,
+      "as_expected": true,
+      "harmful_success": false,
+      "server_error": false,
+      "t_rel": 4.025,
+      "body": "{\"detail\":[{\"type\":\"json_invalid\",\"loc\":[\"body\",63],\"msg\":\"JSON decode error\",\"input\":{},\"ctx\":{\"error\":\"Expecting value\"}}]}"
+    },
+    {
+      "category": "invalid_input",
+      "name": "idempotency_key_tamper",
+      "status": 201,
+      "expected": [
+        409,
+        422
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 4.118,
+      "body": "{\"payment_id\":\"pay_8cac405cca98499a\",\"idempotency_key\":\"TMP-2-3-1794055645\",\"student_id\":\"S0001\",\"invoice_id\":\"INV-TMP-2-1794055645\",\"amount\":50000.0,\"currency\""
+    },
+    {
+      "category": "gateway_bypass",
+      "name": "admin_backdoor_fail_all",
+      "status": 200,
+      "expected": [
+        401
+      ],
+      "blocked": false,
+      "as_expected": false,
+      "harmful_success": true,
+      "server_error": false,
+      "t_rel": 4.214,
+      "body": "{\"faults\":{\"latency_ms\":0.0,\"error_rate\":0.0,\"fail_all\":true}}"
+    }
+  ],
+  "attack_summary": {
+    "authentication": {
+      "attempts": 15,
+      "blocked": 0,
+      "as_expected": 0,
+      "harmful_success": 15,
+      "server_error": 0
+    },
+    "privilege_escalation": {
+      "attempts": 9,
+      "blocked": 0,
+      "as_expected": 0,
+      "harmful_success": 9,
+      "server_error": 0
+    },
+    "bola": {
+      "attempts": 12,
+      "blocked": 0,
+      "as_expected": 0,
+      "harmful_success": 12,
+      "server_error": 0
+    },
+    "gateway_bypass": {
+      "attempts": 10,
+      "blocked": 0,
+      "as_expected": 0,
+      "harmful_success": 10,
+      "server_error": 0
+    },
+    "invalid_input": {
+      "attempts": 21,
+      "blocked": 12,
+      "as_expected": 12,
+      "harmful_success": 9,
+      "server_error": 0
+    }
+  },
+  "attack_total": 67,
+  "attacks_blocked": 12,
+  "attacks_as_expected": 12,
+  "attacks_harmful_success": 55,
+  "attacks_server_error": 0,
+  "admin_backdoor_status": 200,
+  "admin_backdoor_rel_s": 4.21,
+  "bruteforce_statuses": [
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404
+  ],
+  "flood": {
+    "sent": 1168,
+    "throttled_429": 0,
+    "served_200": 1168,
+    "other": {},
+    "throttled_ratio": 0.0
+  },
+  "legit_before": {
+    "total": 161,
+    "success_ratio": 1.0,
+    "p95_ms": 41.3,
+    "p50_ms": 11.6
+  },
+  "legit_during_battery": {
+    "total": 125,
+    "success_ratio": 0.704,
+    "p95_ms": 38.1,
+    "p50_ms": 10.5
+  },
+  "legit_during_flood": {
+    "total": 121,
+    "success_ratio": 1.0,
+    "p95_ms": 87.7,
+    "p50_ms": 44.4
+  },
+  "legit_after": {
+    "total": 453,
+    "success_ratio": 1.0,
+    "p95_ms": 37.9,
+    "p50_ms": 9.8
+  },
+  "audit": null
+}

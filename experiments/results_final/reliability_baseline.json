@@ -1,0 +1,76 @@
+{
+ "mode": "baseline",
+ "observation_s": 240.0,
+ "component": {
+  "instances": 3,
+  "failures_injected": 31,
+  "MTTF_component_s": 12.79041935483871,
+  "MTTR_component_s": 10.435387096774194,
+  "failure_rate_component_per_s": 0.07818351941851638,
+  "injected_mttf_s": 15.0,
+  "availability_component_theory": 0.5506986111111111
+ },
+ "services": {
+  "student": {
+   "replicas": 1,
+   "failures": 9,
+   "downtime_s": 93.29,
+   "uptime_s": 146.71,
+   "MTTF_s": 16.301111111111112,
+   "MTTR_s": 10.365555555555554,
+   "MTBF_s": 26.666666666666668,
+   "failure_rate_per_s": 0.061345511553404675,
+   "availability_observed": 0.6112916666666667,
+   "availability_theory_ideal_redundancy": 0.5506986111111111
+  },
+  "payment": {
+   "replicas": 1,
+   "failures": 13,
+   "downtime_s": 135.81,
+   "uptime_s": 104.19,
+   "MTTF_s": 8.014615384615384,
+   "MTTR_s": 10.446923076923078,
+   "MTBF_s": 18.46153846153846,
+   "failure_rate_per_s": 0.12477205106056244,
+   "availability_observed": 0.434125,
+   "availability_theory_ideal_redundancy": 0.5506986111111111
+  },
+  "academic": {
+   "replicas": 1,
+   "failures": 11,
+   "downtime_s": 146.0,
+   "uptime_s": 94.0,
+   "MTTF_s": 8.545454545454545,
+   "MTTR_s": 13.272727272727273,
+   "MTBF_s": 21.818181818181817,
+   "failure_rate_per_s": 0.11702127659574468,
+   "availability_observed": 0.39166666666666666,
+   "availability_theory_ideal_redundancy": 0.5506986111111111
+  }
+ },
+ "system_any_service_down": {
+  "failures": 10,
+  "downtime_s": 203.4,
+  "MTTF_s": 3.6600000000000024,
+  "MTTR_s": 20.339999999999996,
+  "MTBF_s": 24.0,
+  "availability_observed": 0.1525000000000001
+ },
+ "system_theory_series_of_3_services": 0.16700979521914522,
+ "requests": {
+  "total": 4800,
+  "success": 2474,
+  "failed": 2326,
+  "error_rate": 0.4846,
+  "shed": 0,
+  "hard_failed": 2326,
+  "hard_error_rate": 0.4846,
+  "recovered": 0,
+  "degraded": 0,
+  "replays": 0,
+  "p50_ms": 9.1,
+  "p95_ms": 36.4,
+  "p99_ms": 41.5,
+  "p95_all_ms": 19.8
+ }
+}

@@ -1,0 +1,385 @@
+{
+  "experiment_id": "S8-baseline-r2-20261107T122826Z",
+  "scenario": "S8",
+  "repetition": 2,
+  "datetime": "2026-11-07T12:28:28+00:00",
+  "system_version": "baseline-1.0",
+  "mode": "baseline",
+  "failure_injected": "sequence: SIGKILL payment-1; +1500 ms latency on student-service for 12s; PostgreSQL crash-stop for 6s",
+  "initial_state": {
+    "replicas_per_service": 1,
+    "db": "up",
+    "prometheus": true,
+    "scrape_eval_interval": "1s"
+  },
+  "failure_start": 1794054522.449,
+  "failure_start_rel_s": 14.01,
+  "detection_time_s": 0.027,
+  "detection_monitor_s": 0.027,
+  "detection_internal_s": null,
+  "detection_client_s": 0.102,
+  "recovery_start": null,
+  "recovery_end": 1794054564.786,
+  "recovery_duration_s": 42.337,
+  "repair_action_s": null,
+  "total_requests": 2040,
+  "successful_requests": 1797,
+  "failed_requests": 243,
+  "shed_requests": 0,
+  "hard_failed_requests": 243,
+  "recovered_requests": 0,
+  "degraded_requests": 0,
+  "duplicate_requests": 0,
+  "duplicates_prevented": 0,
+  "window_total": 1270,
+  "window_failed": 243,
+  "window_success": 1027,
+  "window_error_rate": 0.1913,
+  "user_visible_downtime_s": {
+    "student": 18.23,
+    "payment": 16.63,
+    "academic": 18.33
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 18.23,
+    "payment": 16.63,
+    "academic": 18.33
+  },
+  "probe_availability_strict": {
+    "student": 0.8449,
+    "payment": 0.7167,
+    "academic": 0.8428
+  },
+  "probe_availability_lenient": {
+    "student": 0.8449,
+    "payment": 0.7167,
+    "academic": 0.8428
+  },
+  "latency": {
+    "p50_ms": 12.3,
+    "p95_ms": 1519.2,
+    "p99_ms": 1544.0
+  },
+  "per_op": {
+    "get_account": {
+      "total": 106,
+      "success": 86,
+      "failed": 20,
+      "error_rate": 0.1887,
+      "shed": 0,
+      "hard_failed": 20,
+      "hard_error_rate": 0.1887,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 9.4,
+      "p95_ms": 16.8,
+      "p99_ms": 22.9,
+      "p95_all_ms": 14.6
+    },
+    "get_student": {
+      "total": 895,
+      "success": 815,
+      "failed": 80,
+      "error_rate": 0.0894,
+      "shed": 0,
+      "hard_failed": 80,
+      "hard_error_rate": 0.0894,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 9.4,
+      "p95_ms": 1514.0,
+      "p99_ms": 1520.7,
+      "p95_all_ms": 1513.5
+    },
+    "get_transcript": {
+      "total": 431,
+      "success": 390,
+      "failed": 41,
+      "error_rate": 0.0951,
+      "shed": 0,
+      "hard_failed": 41,
+      "hard_error_rate": 0.0951,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 15.8,
+      "p95_ms": 1521.5,
+      "p99_ms": 1529.8,
+      "p95_all_ms": 1520.0
+    },
+    "post_grade": {
+      "total": 293,
+      "success": 261,
+      "failed": 32,
+      "error_rate": 0.1092,
+      "shed": 0,
+      "hard_failed": 32,
+      "hard_error_rate": 0.1092,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 10.3,
+      "p95_ms": 17.7,
+      "p99_ms": 26.5,
+      "p95_all_ms": 17.4
+    },
+    "post_payment": {
+      "total": 315,
+      "success": 245,
+      "failed": 70,
+      "error_rate": 0.2222,
+      "shed": 0,
+      "hard_failed": 70,
+      "hard_error_rate": 0.2222,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 41.1,
+      "p95_ms": 1545.4,
+      "p99_ms": 1550.1,
+      "p95_all_ms": 1544.1
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 0,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 245,
+    "duplicate_academic_records": 0,
+    "academic_records": 261,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "attack_rows": 0,
+    "audit_events": null,
+    "audit_deny_events": null,
+    "audit_broken_links": 0,
+    "violations": {},
+    "consistent": true
+  },
+  "consistent": true,
+  "stack_events": [
+    {
+      "ts": 1794054522.4487147,
+      "type": "fault_kill_instance",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794054532.449106,
+      "type": "operator_restart_start",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794054532.451414,
+      "type": "restart_start",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794054532.9305713,
+      "type": "restart_ready",
+      "name": "payment-1"
+    },
+    {
+      "ts": 1794054538.4582915,
+      "type": "fault_set",
+      "name": "student",
+      "latency_ms": 1500,
+      "error_rate": 0,
+      "fail_all": false
+    },
+    {
+      "ts": 1794054550.463836,
+      "type": "fault_cleared",
+      "name": "student",
+      "latency_ms": 0,
+      "error_rate": 0,
+      "fail_all": false
+    }
+  ],
+  "observations": [
+    "Three faults injected in sequence; detection = first firing of an alert rule expected for that fault."
+  ],
+  "alerts": {
+    "false_alerts_before_fault": [],
+    "fired_after_fault": [
+      "DatabaseUnreachable",
+      "HighErrorRatio",
+      "HighLatencyP95",
+      "InstanceDown",
+      "InstanceRecentlyDown"
+    ],
+    "first_firing_after_fault_s": {
+      "DatabaseUnreachable": 39.28,
+      "HighErrorRatio": 6.25,
+      "HighLatencyP95": 22.26,
+      "InstanceDown": 3.25,
+      "InstanceRecentlyDown": 12.25
+    },
+    "detection_by_alert_s": 3.25,
+    "timeline": [
+      {
+        "ts": 1794054523.6989863,
+        "alert": "InstanceDown",
+        "state": "pending",
+        "rel_s": 1.25
+      },
+      {
+        "ts": 1794054525.69966,
+        "alert": "InstanceDown",
+        "state": "firing",
+        "rel_s": 3.25
+      },
+      {
+        "ts": 1794054525.69966,
+        "alert": "HighErrorRatio",
+        "state": "pending",
+        "rel_s": 3.25
+      },
+      {
+        "ts": 1794054528.7009785,
+        "alert": "HighErrorRatio",
+        "state": "firing",
+        "rel_s": 6.25
+      },
+      {
+        "ts": 1794054534.7033055,
+        "alert": "InstanceRecentlyDown",
+        "state": "firing",
+        "rel_s": 12.25
+      },
+      {
+        "ts": 1794054534.7033055,
+        "alert": "InstanceDown",
+        "state": "resolved",
+        "rel_s": 12.25
+      },
+      {
+        "ts": 1794054541.7086186,
+        "alert": "HighLatencyP95",
+        "state": "pending",
+        "rel_s": 19.26
+      },
+      {
+        "ts": 1794054541.7086186,
+        "alert": "HighErrorRatio",
+        "state": "resolved",
+        "rel_s": 19.26
+      },
+      {
+        "ts": 1794054544.7132766,
+        "alert": "HighLatencyP95",
+        "state": "firing",
+        "rel_s": 22.26
+      },
+      {
+        "ts": 1794054559.7250345,
+        "alert": "DatabaseUnreachable",
+        "state": "pending",
+        "rel_s": 37.28
+      },
+      {
+        "ts": 1794054560.7267482,
+        "alert": "HighErrorRatio",
+        "state": "pending",
+        "rel_s": 38.28
+      },
+      {
+        "ts": 1794054560.7267482,
+        "alert": "HighLatencyP95",
+        "state": "resolved",
+        "rel_s": 38.28
+      },
+      {
+        "ts": 1794054561.7272227,
+        "alert": "DatabaseUnreachable",
+        "state": "firing",
+        "rel_s": 39.28
+      },
+      {
+        "ts": 1794054563.7282088,
+        "alert": "HighErrorRatio",
+        "state": "firing",
+        "rel_s": 41.28
+      },
+      {
+        "ts": 1794054563.7282088,
+        "alert": "InstanceRecentlyDown",
+        "state": "resolved",
+        "rel_s": 41.28
+      },
+      {
+        "ts": 1794054565.7291982,
+        "alert": "DatabaseUnreachable",
+        "state": "resolved",
+        "rel_s": 43.28
+      },
+      {
+        "ts": 1794054573.7330377,
+        "alert": "HighErrorRatio",
+        "state": "resolved",
+        "rel_s": 51.28
+      }
+    ]
+  },
+  "per_fault": [
+    {
+      "fault": "instance_crash",
+      "inject_rel_s": 14.01,
+      "duration_s": 10.48,
+      "alerts_fired": [
+        "HighErrorRatio",
+        "InstanceDown",
+        "InstanceRecentlyDown"
+      ],
+      "first_alert": "InstanceDown",
+      "detection_s": 3.25,
+      "resolved_after_clear_s": 30.8,
+      "first_client_error_s": 0.1
+    },
+    {
+      "fault": "slow_dependency",
+      "inject_rel_s": 30.02,
+      "duration_s": 12.01,
+      "alerts_fired": [
+        "HighLatencyP95"
+      ],
+      "first_alert": "HighLatencyP95",
+      "detection_s": 6.26,
+      "resolved_after_clear_s": 10.26,
+      "first_client_error_s": null
+    },
+    {
+      "fault": "database_outage",
+      "inject_rel_s": 50.03,
+      "duration_s": 6.32,
+      "alerts_fired": [
+        "DatabaseUnreachable",
+        "HighErrorRatio"
+      ],
+      "first_alert": "DatabaseUnreachable",
+      "detection_s": 3.26,
+      "resolved_after_clear_s": 8.95,
+      "first_client_error_s": 0.02
+    }
+  ],
+  "false_alerts_during_warmup": [],
+  "warmup_s": 14.0,
+  "diagnosability": {
+    "incident_requests": 243,
+    "found_in_logs": 187,
+    "localized_cause": 187,
+    "multi_hop_trace": 27,
+    "found_ratio": 0.7695,
+    "localized_ratio": 0.7695,
+    "multi_hop_ratio": 0.1111
+  },
+  "sample_trace": null,
+  "detected_faults": 3,
+  "operator_delay_s": 10.0
+}

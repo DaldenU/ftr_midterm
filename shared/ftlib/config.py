@@ -32,7 +32,7 @@ def _urls(name: str) -> list[str]:
 @dataclass(frozen=True)
 class Settings:
     service_name: str
-    mode: str                      # "baseline" | "ft"
+    mode: str                      # "baseline" | "ft" | "final" (= ft + security + alerting)
     database_url: str
     instance_id: str
     enable_fault_injection: bool
@@ -55,19 +55,39 @@ class Settings:
     payment_rollback_after_s: float = 6.0  # stale PENDING payments are rolled back after this
     processor_latency_ms: float = 20.0   # simulated external payment processor latency
     cache_max_entries: int = 20000
+    # --- security parameters (only used when mode == "final") ---
+    jwt_secret: str = ""
+    internal_auth_secret: str = ""
+    admin_token: str = ""
+    max_body_bytes: int = 16384
+    internal_auth_window_s: float = 60.0
 
     @property
     def is_ft(self) -> bool:
-        return self.mode == "ft"
+        """Fault-tolerance mechanisms are active in 'ft' and in 'final'."""
+        return self.mode in ("ft", "final")
+
+    @property
+    def is_secure(self) -> bool:
+        """Security controls (authentication, RBAC, validation, audit) are active only in 'final'."""
+        return self.mode == "final"
 
 
 def load_settings(service_name: str) -> Settings:
     mode = os.getenv("FT_MODE", "baseline").strip().lower()
-    if mode not in ("baseline", "ft"):
-        raise ValueError(f"FT_MODE must be 'baseline' or 'ft', got {mode!r}")
+    if mode not in ("baseline", "ft", "final"):
+        raise ValueError(f"FT_MODE must be 'baseline', 'ft' or 'final', got {mode!r}")
     dsn = os.getenv("DATABASE_URL")
     if not dsn:
         raise RuntimeError("DATABASE_URL is not set (see .env.example)")
+    jwt_secret = os.getenv("JWT_SECRET", "")
+    internal_secret = os.getenv("INTERNAL_AUTH_SECRET", "")
+    admin_token = os.getenv("ADMIN_TOKEN", "")
+    if mode == "final":
+        # fail fast on weak or missing secrets instead of running insecurely
+        for name, val in (("JWT_SECRET", jwt_secret), ("INTERNAL_AUTH_SECRET", internal_secret), ("ADMIN_TOKEN", admin_token)):
+            if len(val) < 32:
+                raise RuntimeError(f"{name} must be set and at least 32 characters long in FT_MODE=final")
     return Settings(
         service_name=service_name,
         mode=mode,
@@ -91,4 +111,9 @@ def load_settings(service_name: str) -> Settings:
         payment_rollback_after_s=_float("PAYMENT_ROLLBACK_AFTER_S", 6.0),
         processor_latency_ms=_float("PROCESSOR_LATENCY_MS", 20.0),
         cache_max_entries=_int("CACHE_MAX_ENTRIES", 20000),
+        jwt_secret=jwt_secret,
+        internal_auth_secret=internal_secret,
+        admin_token=admin_token,
+        max_body_bytes=_int("MAX_BODY_BYTES", 16384),
+        internal_auth_window_s=_float("INTERNAL_AUTH_WINDOW_S", 60.0),
     )

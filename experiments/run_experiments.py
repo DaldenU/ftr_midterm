@@ -21,6 +21,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from experiments.harness.pg import PgCluster
 from experiments.harness.scenarios import Run, SCENARIOS
+from experiments.harness.scenarios_final import SCENARIOS_FINAL
+
+SCENARIOS = {**SCENARIOS, **SCENARIOS_FINAL}
 from experiments.harness.stack import default_workdir
 
 RESULTS = Path(__file__).resolve().parent / "results"
@@ -86,7 +89,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenarios", default="")
     ap.add_argument("--all", action="store_true")
-    ap.add_argument("--modes", default="baseline,ft")
+    ap.add_argument("--modes", default="baseline,final")
     ap.add_argument("--reps", type=int, default=1)
     ap.add_argument("--results", default=str(RESULTS))
     ap.add_argument("--clean", action="store_true", help="delete previous results first")

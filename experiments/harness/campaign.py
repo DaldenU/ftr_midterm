@@ -33,8 +33,9 @@ def run_campaign(mode: str, pg: PgCluster, duration: float = 240.0, mttf_c: floa
     stack.start()
     time.sleep(0.5)
     rec = Recorder()
-    wl = Workload(Client(stack.gateway_url, timeout=5.0, seed=seed), rec, seed=seed)
-    prober = Prober(stack.gateway_url)
+    sec = stack.security
+    wl = Workload(Client(stack.gateway_url, timeout=5.0, seed=seed, security=sec), rec, seed=seed)
+    prober = Prober(stack.gateway_url, headers=sec.auth("S0001") if sec else None)
     prober.start()
     t0 = time.time()
     wl_thread = threading.Thread(target=wl.run_open_loop, args=(duration, rate), daemon=True)
@@ -96,6 +97,6 @@ def run_campaign(mode: str, pg: PgCluster, duration: float = 240.0, mttf_c: floa
     stack.stop()
     return {"mode": mode, "datetime": dt.datetime.fromtimestamp(t0, dt.timezone.utc).isoformat(timespec="seconds"),
             "duration_s": duration, "mttf_component_injected_s": mttf_c, "operator_delay_s": operator_delay if mode == "baseline" else None,
-            "restart_delay_s": restart_delay if mode == "ft" else None, "instances": len(inst_names), "seed": seed,
+            "restart_delay_s": restart_delay if mode != "baseline" else None, "instances": len(inst_names), "seed": seed,
             "kills": [{**k, "t_kill_rel": round(k["t_kill"] - t0, 2)} for k in kills],
             "services": svc, "requests": summary}

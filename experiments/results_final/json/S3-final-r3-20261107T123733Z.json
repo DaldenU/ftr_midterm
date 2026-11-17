@@ -1,0 +1,262 @@
+{
+  "experiment_id": "S3-final-r3-20261107T123733Z",
+  "scenario": "S3",
+  "repetition": 3,
+  "datetime": "2026-11-07T12:37:35+00:00",
+  "system_version": "final-2.0",
+  "mode": "final",
+  "failure_injected": "student-service gray failure: +3000 ms latency and 30% HTTP 503 on all replicas for 20s",
+  "initial_state": {
+    "replicas_per_service": 2,
+    "db": "up"
+  },
+  "failure_start": 1794055063.992,
+  "failure_start_rel_s": 8.01,
+  "detection_time_s": 1.713,
+  "detection_monitor_s": null,
+  "detection_internal_s": 1.713,
+  "detection_client_s": 5.161,
+  "recovery_start": 1794055084.004,
+  "recovery_end": 1794055089.495,
+  "recovery_duration_s": 25.503,
+  "repair_action_s": 5.491,
+  "total_requests": 1840,
+  "successful_requests": 1741,
+  "failed_requests": 99,
+  "shed_requests": 0,
+  "hard_failed_requests": 99,
+  "recovered_requests": 55,
+  "degraded_requests": 343,
+  "duplicate_requests": 0,
+  "duplicates_prevented": 0,
+  "window_total": 1020,
+  "window_failed": 99,
+  "window_success": 921,
+  "window_error_rate": 0.0971,
+  "user_visible_downtime_s": {
+    "student": 20.05,
+    "payment": 0,
+    "academic": 2.0
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 20.05,
+    "payment": 0,
+    "academic": 25.19
+  },
+  "probe_availability_strict": {
+    "student": 0.9,
+    "payment": 1.0,
+    "academic": 0.3821
+  },
+  "probe_availability_lenient": {
+    "student": 0.9,
+    "payment": 1.0,
+    "academic": 0.9851
+  },
+  "latency": {
+    "p50_ms": 8.6,
+    "p95_ms": 3010.1,
+    "p99_ms": 3017.7
+  },
+  "per_op": {
+    "get_account": {
+      "total": 89,
+      "success": 89,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 6.1,
+      "p95_ms": 13.7,
+      "p99_ms": 17.3,
+      "p95_all_ms": 13.7
+    },
+    "get_student": {
+      "total": 847,
+      "success": 748,
+      "failed": 99,
+      "error_rate": 0.1169,
+      "shed": 0,
+      "hard_failed": 99,
+      "hard_error_rate": 0.1169,
+      "recovered": 17,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 7.9,
+      "p95_ms": 3015.2,
+      "p99_ms": 3020.2,
+      "p95_all_ms": 5005.1
+    },
+    "get_transcript": {
+      "total": 368,
+      "success": 368,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 20,
+      "degraded": 205,
+      "replays": 0,
+      "p50_ms": 7.8,
+      "p95_ms": 1115.3,
+      "p99_ms": 2131.3,
+      "p95_all_ms": 1115.3
+    },
+    "post_grade": {
+      "total": 280,
+      "success": 280,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 7.8,
+      "p95_ms": 20.5,
+      "p99_ms": 27.9,
+      "p95_all_ms": 20.5
+    },
+    "post_payment": {
+      "total": 256,
+      "success": 256,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 18,
+      "degraded": 138,
+      "replays": 0,
+      "p50_ms": 34.6,
+      "p95_ms": 1151.7,
+      "p99_ms": 2148.5,
+      "p95_all_ms": 1151.7
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 0,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 256,
+    "duplicate_academic_records": 0,
+    "academic_records": 280,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "attack_rows": 0,
+    "audit_events": 536,
+    "audit_deny_events": 0,
+    "audit_broken_links": 0,
+    "violations": {},
+    "consistent": true
+  },
+  "consistent": true,
+  "stack_events": [
+    {
+      "ts": 1794055063.9977388,
+      "type": "fault_set",
+      "name": "student",
+      "latency_ms": 3000,
+      "error_rate": 0.3,
+      "fail_all": false
+    },
+    {
+      "ts": 1794055084.004224,
+      "type": "fault_cleared",
+      "name": "student",
+      "latency_ms": 0,
+      "error_rate": 0,
+      "fail_all": false
+    }
+  ],
+  "observations": [
+    "Circuit breakers on payment/academic opened after consecutive timeouts, then fast-failed into degraded mode (payment accepted unverified, transcript without student profile)."
+  ],
+  "alerts": {
+    "false_alerts_before_fault": [],
+    "fired_after_fault": [
+      "CircuitBreakerOpen",
+      "DegradedResponses",
+      "HighLatencyP95"
+    ],
+    "first_firing_after_fault_s": {
+      "CircuitBreakerOpen": 3.75,
+      "DegradedResponses": 5.75,
+      "HighLatencyP95": 5.75
+    },
+    "detection_by_alert_s": 3.75,
+    "timeline": [
+      {
+        "ts": 1794055066.738703,
+        "alert": "HighLatencyP95",
+        "state": "pending",
+        "rel_s": 2.75
+      },
+      {
+        "ts": 1794055066.738703,
+        "alert": "CircuitBreakerOpen",
+        "state": "pending",
+        "rel_s": 2.75
+      },
+      {
+        "ts": 1794055067.7395363,
+        "alert": "CircuitBreakerOpen",
+        "state": "firing",
+        "rel_s": 3.75
+      },
+      {
+        "ts": 1794055067.7395363,
+        "alert": "DegradedResponses",
+        "state": "pending",
+        "rel_s": 3.75
+      },
+      {
+        "ts": 1794055069.7453835,
+        "alert": "HighLatencyP95",
+        "state": "firing",
+        "rel_s": 5.75
+      },
+      {
+        "ts": 1794055069.7453835,
+        "alert": "DegradedResponses",
+        "state": "firing",
+        "rel_s": 5.75
+      },
+      {
+        "ts": 1794055090.7716513,
+        "alert": "CircuitBreakerOpen",
+        "state": "resolved",
+        "rel_s": 26.78
+      },
+      {
+        "ts": 1794055095.7771692,
+        "alert": "HighLatencyP95",
+        "state": "resolved",
+        "rel_s": 31.79
+      },
+      {
+        "ts": 1794055099.7790828,
+        "alert": "DegradedResponses",
+        "state": "resolved",
+        "rel_s": 35.79
+      }
+    ]
+  },
+  "breaker_closed_after_clear_s": 5.0,
+  "fault": {
+    "latency_ms": 3000,
+    "error_rate": 0.3,
+    "duration_s": 20.0
+  }
+}

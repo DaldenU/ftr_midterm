@@ -7,6 +7,8 @@ Invariants
   I4  (student, course, term) appears at most once      (no duplicate academic records)
   I5  every acknowledged (2xx) payment/grade exists     (no lost acknowledged writes)
   I6  a grade batch is all-or-nothing                    (no partial batches), if expectations given
+  I7  the hash-chained audit trail verifies end-to-end   (final mode only: no broken links)
+  I8  no row written by a denied/attack request          (security experiment: rows tagged 'ATK')
 """
 from __future__ import annotations
 
@@ -56,9 +58,32 @@ def check(dsn: str, acked_payment_ids=(), acked_grade_keys=(), expected_batches:
             out["missing_batches"] = len(missing)
         else:
             out["partial_batches"] = out["batches_with_duplicates"] = out["missing_batches"] = 0
+        # I8: attack payloads are tagged with ATK in an identifier or carry markup; none may persist
+        out["attack_rows"] = int(q("""SELECT (SELECT count(*) FROM payment.payments WHERE invoice_id LIKE '%%ATK%%' OR amount <= 0
+                                               OR amount > 50000000 OR student_id !~ '^S[0-9A-F]{4,8}$')
+                                     + (SELECT count(*) FROM academic.records WHERE course_code LIKE '%%ATK%%'
+                                               OR grade < 0 OR grade > 100 OR student_id !~ '^S[0-9A-F]{4,8}$')
+                                     + (SELECT count(*) FROM student.students WHERE full_name ~ '[<>]' OR email LIKE '%%atk%%')""")[0][0])
+        # I7: audit chain (only exists in the final schema)
+        has_audit = q("SELECT to_regclass('security.audit_events') IS NOT NULL")[0][0]
+        if has_audit:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared"))
+            from ftlib.security import verify_chain
+            cols = [d for d in ("chain_id", "seq", "epoch_ms", "service", "request_id", "actor", "role", "action", "resource",
+                                "outcome", "status_code", "detail", "prev_hash", "event_hash")]
+            rows = [dict(zip(cols, r)) for r in q(f"SELECT {', '.join(cols)} FROM security.audit_events")]
+            v = verify_chain(rows)
+            out["audit_events"] = v["events"]
+            out["audit_deny_events"] = sum(1 for r in rows if r["outcome"] == "DENY")
+            out["audit_broken_links"] = v["broken_links"]
+        else:
+            out["audit_events"] = out["audit_deny_events"] = None
+            out["audit_broken_links"] = 0
     violations = {k: out[k] for k in ("duplicate_payments", "ledger_mismatch_students", "stuck_pending_payments",
                                       "duplicate_academic_records", "lost_acknowledged_payments", "lost_acknowledged_grades",
-                                      "partial_batches", "batches_with_duplicates") if out[k]}
+                                      "partial_batches", "batches_with_duplicates", "attack_rows", "audit_broken_links") if out[k]}
     out["violations"] = violations
     out["consistent"] = not violations
     return out

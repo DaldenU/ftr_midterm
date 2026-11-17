@@ -16,11 +16,20 @@ spec:
           imagePullPolicy: IfNotPresent
           ports: [{containerPort: 8000}]
           envFrom: [{configMapRef: {name: uni-config}}]
+          env:
+            - {name: JWT_SECRET, valueFrom: {secretKeyRef: {name: uni-secrets, key: JWT_SECRET}}}
+            - {name: ADMIN_TOKEN, valueFrom: {secretKeyRef: {name: uni-secrets, key: ADMIN_TOKEN}}}
+          volumeMounts: [{name: users, mountPath: /run/secrets/uis, readOnly: true}]
+          securityContext: {runAsNonRoot: true, runAsUser: 10001, allowPrivilegeEscalation: false,
+                            readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           readinessProbe: {httpGet: {path: /health, port: 8000}, periodSeconds: 2}
           livenessProbe: {httpGet: {path: /health, port: 8000}, initialDelaySeconds: 5, periodSeconds: 5}
           resources:
             requests: {cpu: 250m, memory: 128Mi}
             limits: {cpu: "1", memory: 256Mi}
+      volumes:
+        - name: users
+          secret: {secretName: uni-secrets, items: [{key: users.json, path: users.json}]}
 ---
 apiVersion: v1
 kind: Service                          # kube-proxy load-balances over the ready gateway pods

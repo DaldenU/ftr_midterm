@@ -1,0 +1,111 @@
+# Prometheus rule unit tests (alert-test evidence):  promtool test rules tests/promtool/alerts_test.yml
+rule_files:
+- ../../monitoring/prometheus/alerts.yml
+evaluation_interval: 1s
+tests:
+- interval: 1s
+  input_series:
+  - series: up{job="payment-service", name="payment-1"}
+    values: 1 1 1 0 0 0 0 0 1 1 1 1
+  - series: up{job="payment-service", name="payment-2"}
+    values: 1x12
+  alert_rule_test:
+  - eval_time: 4s
+    alertname: InstanceDown
+    exp_alerts: []
+  - eval_time: 6s
+    alertname: InstanceDown
+    exp_alerts:
+    - exp_labels:
+        severity: critical
+        job: payment-service
+        name: payment-1
+        fault: F1/F2 process or node crash
+      exp_annotations:
+        summary: payment-1 is down (scrape failed)
+        runbook: Gateway ejects it automatically; check supervisor/ReplicaSet restarted it; inspect last log lines of the instance.
+  - eval_time: 10s
+    alertname: InstanceRecentlyDown
+    exp_alerts:
+    - exp_labels:
+        severity: warning
+        job: payment-service
+        name: payment-1
+        fault: F1/F2 masked crash (auto-restarted)
+      exp_annotations:
+        summary: payment-1 failed a scrape in the last 30 s and is back (crash masked by restart/failover)
+        runbook: 'Masked fault: check restart count and logs of the instance; repeated firing = crash loop.'
+  - eval_time: 10s
+    alertname: InstanceDown
+    exp_alerts: []
+- interval: 1s
+  input_series:
+  - series: db_up{job="student-service", name="student-1"}
+    values: 1 1 0 0 0 0 0 1 1
+  - series: db_up{job="student-service", name="student-2"}
+    values: 1 1 0 0 0 0 0 1 1
+  alert_rule_test:
+  - eval_time: 5s
+    alertname: DatabaseUnreachable
+    exp_alerts:
+    - exp_labels:
+        severity: critical
+        fault: F3/F4 database crash or host loss
+      exp_annotations:
+        summary: 2 service instance(s) cannot reach PostgreSQL
+        runbook: Reads are served from cache (X-Degraded), writes retry within budget; check pg primary, promote standby if primary host is lost.
+  - eval_time: 8s
+    alertname: DatabaseUnreachable
+    exp_alerts: []
+- interval: 1s
+  input_series:
+  - series: circuit_breaker_state{service="payment-service", instance="payment-1", target="student-service"}
+    values: 0 0 2 2 2 2 0
+  alert_rule_test:
+  - eval_time: 4s
+    alertname: CircuitBreakerOpen
+    exp_alerts:
+    - exp_labels:
+        severity: warning
+        fault: F5/F6 dependency failing
+      exp_annotations:
+        summary: 'A circuit breaker is OPEN: a dependency is failing and callers fail fast / degrade'
+        runbook: Identify target label of circuit_breaker_state; responses carry X-Degraded until it closes.
+- interval: 1s
+  input_series:
+  - series: gateway_requests_total{service="payment", status="200"}
+    values: 0+16x30
+  - series: gateway_requests_total{service="payment", status="503"}
+    values: 0+4x30
+  alert_rule_test:
+  - eval_time: 20s
+    alertname: HighErrorRatio
+    exp_alerts:
+    - exp_labels:
+        severity: warning
+        fault: any user-visible failure
+      exp_annotations:
+        summary: More than 5% of proxied requests fail (20%)
+        runbook: Filter gateway JSON logs by status>=500, follow request_id/trace_id into service logs to find the failing hop.
+- interval: 1s
+  input_series:
+  - series: gateway_security_events_total{type="auth_bad_signature"}
+    values: 0 0 0 50 100 150 200 200 200
+  alert_rule_test:
+  - eval_time: 5s
+    alertname: SecurityDenialSpike
+    exp_alerts:
+    - exp_labels:
+        severity: critical
+        fault: T1-T7 misuse / intrusion attempt
+      exp_annotations:
+        summary: 150 denied requests in 15 s (auth/RBAC/BOLA/validation/rate-limit)
+        runbook: Group edge_denied logs by actor and client_ip; verify audit chain (verify_audit.py); block the principal if abusive.
+- interval: 1s
+  input_series:
+  - series: gateway_security_events_total{type="auth_bad_signature"}
+    values: 0 1 2 3 4 5 6 7 8
+  alert_rule_test:
+  - eval_time: 8s
+    alertname: SecurityDenialSpike
+    exp_alerts: []

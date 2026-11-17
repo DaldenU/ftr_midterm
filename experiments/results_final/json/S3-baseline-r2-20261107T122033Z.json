@@ -1,0 +1,242 @@
+{
+  "experiment_id": "S3-baseline-r2-20261107T122033Z",
+  "scenario": "S3",
+  "repetition": 2,
+  "datetime": "2026-11-07T12:20:35+00:00",
+  "system_version": "baseline-1.0",
+  "mode": "baseline",
+  "failure_injected": "student-service gray failure: +3000 ms latency and 30% HTTP 503 on all replicas for 20s",
+  "initial_state": {
+    "replicas_per_service": 1,
+    "db": "up"
+  },
+  "failure_start": 1794054043.124,
+  "failure_start_rel_s": 8.02,
+  "detection_time_s": 3.093,
+  "detection_monitor_s": null,
+  "detection_internal_s": null,
+  "detection_client_s": 3.093,
+  "recovery_start": 1794054063.132,
+  "recovery_end": 1794054063.265,
+  "recovery_duration_s": 20.141,
+  "repair_action_s": 0.133,
+  "total_requests": 1840,
+  "successful_requests": 1657,
+  "failed_requests": 183,
+  "shed_requests": 0,
+  "hard_failed_requests": 183,
+  "recovered_requests": 0,
+  "degraded_requests": 0,
+  "duplicate_requests": 0,
+  "duplicates_prevented": 0,
+  "window_total": 806,
+  "window_failed": 183,
+  "window_success": 623,
+  "window_error_rate": 0.227,
+  "user_visible_downtime_s": {
+    "student": 20.05,
+    "payment": 0,
+    "academic": 20.04
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 20.05,
+    "payment": 0,
+    "academic": 20.04
+  },
+  "probe_availability_strict": {
+    "student": 0.9005,
+    "payment": 1.0,
+    "academic": 0.9005
+  },
+  "probe_availability_lenient": {
+    "student": 0.9005,
+    "payment": 1.0,
+    "academic": 0.9005
+  },
+  "latency": {
+    "p50_ms": 15.0,
+    "p95_ms": 3032.5,
+    "p99_ms": 3045.4
+  },
+  "per_op": {
+    "get_account": {
+      "total": 95,
+      "success": 95,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 10.1,
+      "p95_ms": 17.2,
+      "p99_ms": 35.1,
+      "p95_all_ms": 17.2
+    },
+    "get_student": {
+      "total": 816,
+      "success": 712,
+      "failed": 104,
+      "error_rate": 0.1275,
+      "shed": 0,
+      "hard_failed": 104,
+      "hard_error_rate": 0.1275,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 11.1,
+      "p95_ms": 3018.8,
+      "p99_ms": 3022.7,
+      "p95_all_ms": 3018.4
+    },
+    "get_transcript": {
+      "total": 380,
+      "success": 335,
+      "failed": 45,
+      "error_rate": 0.1184,
+      "shed": 0,
+      "hard_failed": 45,
+      "hard_error_rate": 0.1184,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 20.0,
+      "p95_ms": 3026.4,
+      "p99_ms": 3033.6,
+      "p95_all_ms": 3026.1
+    },
+    "post_grade": {
+      "total": 268,
+      "success": 268,
+      "failed": 0,
+      "error_rate": 0.0,
+      "shed": 0,
+      "hard_failed": 0,
+      "hard_error_rate": 0.0,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 11.0,
+      "p95_ms": 19.8,
+      "p99_ms": 23.6,
+      "p95_all_ms": 19.8
+    },
+    "post_payment": {
+      "total": 281,
+      "success": 247,
+      "failed": 34,
+      "error_rate": 0.121,
+      "shed": 0,
+      "hard_failed": 34,
+      "hard_error_rate": 0.121,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 42.1,
+      "p95_ms": 3046.7,
+      "p99_ms": 3052.8,
+      "p95_all_ms": 3045.8
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 0,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 247,
+    "duplicate_academic_records": 0,
+    "academic_records": 268,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "attack_rows": 0,
+    "audit_events": null,
+    "audit_deny_events": null,
+    "audit_broken_links": 0,
+    "violations": {},
+    "consistent": true
+  },
+  "consistent": true,
+  "stack_events": [
+    {
+      "ts": 1794054043.12712,
+      "type": "fault_set",
+      "name": "student",
+      "latency_ms": 3000,
+      "error_rate": 0.3,
+      "fail_all": false
+    },
+    {
+      "ts": 1794054063.1324375,
+      "type": "fault_cleared",
+      "name": "student",
+      "latency_ms": 0,
+      "error_rate": 0,
+      "fail_all": false
+    }
+  ],
+  "observations": [
+    "Baseline waits on the slow dependency (30 s timeout): worker threads pile up and latency propagates to callers."
+  ],
+  "alerts": {
+    "false_alerts_before_fault": [],
+    "fired_after_fault": [
+      "HighErrorRatio",
+      "HighLatencyP95"
+    ],
+    "first_firing_after_fault_s": {
+      "HighErrorRatio": 8.5,
+      "HighLatencyP95": 7.49
+    },
+    "detection_by_alert_s": 7.49,
+    "timeline": [
+      {
+        "ts": 1794054047.6153588,
+        "alert": "HighLatencyP95",
+        "state": "pending",
+        "rel_s": 4.49
+      },
+      {
+        "ts": 1794054048.6157365,
+        "alert": "HighErrorRatio",
+        "state": "pending",
+        "rel_s": 5.49
+      },
+      {
+        "ts": 1794054050.6182253,
+        "alert": "HighLatencyP95",
+        "state": "firing",
+        "rel_s": 7.49
+      },
+      {
+        "ts": 1794054051.6195517,
+        "alert": "HighErrorRatio",
+        "state": "firing",
+        "rel_s": 8.5
+      },
+      {
+        "ts": 1794054072.6379056,
+        "alert": "HighErrorRatio",
+        "state": "resolved",
+        "rel_s": 29.51
+      },
+      {
+        "ts": 1794054074.6429324,
+        "alert": "HighLatencyP95",
+        "state": "resolved",
+        "rel_s": 31.52
+      }
+    ]
+  },
+  "breaker_closed_after_clear_s": null,
+  "fault": {
+    "latency_ms": 3000,
+    "error_rate": 0.3,
+    "duration_s": 20.0
+  }
+}

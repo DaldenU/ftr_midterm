@@ -1,0 +1,221 @@
+{
+  "experiment_id": "S2-baseline-r2-20261107T121915Z",
+  "scenario": "S2",
+  "repetition": 2,
+  "datetime": "2026-11-07T12:19:17+00:00",
+  "system_version": "baseline-1.0",
+  "mode": "baseline",
+  "failure_injected": "PostgreSQL crash-stop (pg_ctl -m immediate) for 8s, then restart",
+  "initial_state": {
+    "replicas_per_service": 1,
+    "db": "up"
+  },
+  "failure_start": 1794053965.486,
+  "failure_start_rel_s": 8.01,
+  "detection_time_s": 0.014,
+  "detection_monitor_s": 0.051,
+  "detection_internal_s": null,
+  "detection_client_s": 0.014,
+  "recovery_start": 1794053973.486,
+  "recovery_end": 1794053973.737,
+  "recovery_duration_s": 8.25,
+  "repair_action_s": 0.25,
+  "total_requests": 1280,
+  "successful_requests": 953,
+  "failed_requests": 327,
+  "shed_requests": 0,
+  "hard_failed_requests": 327,
+  "recovered_requests": 0,
+  "degraded_requests": 0,
+  "duplicate_requests": 0,
+  "duplicates_prevented": 0,
+  "window_total": 330,
+  "window_failed": 326,
+  "window_success": 4,
+  "window_error_rate": 0.9879,
+  "user_visible_downtime_s": {
+    "student": 8.21,
+    "payment": 8.21,
+    "academic": 8.21
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 8.21,
+    "payment": 8.21,
+    "academic": 8.21
+  },
+  "probe_availability_strict": {
+    "student": 0.6583,
+    "payment": 0.6583,
+    "academic": 0.6583
+  },
+  "probe_availability_lenient": {
+    "student": 0.6583,
+    "payment": 0.6583,
+    "academic": 0.6583
+  },
+  "latency": {
+    "p50_ms": 10.4,
+    "p95_ms": 39.4,
+    "p99_ms": 44.1
+  },
+  "per_op": {
+    "get_account": {
+      "total": 73,
+      "success": 59,
+      "failed": 14,
+      "error_rate": 0.1918,
+      "shed": 0,
+      "hard_failed": 14,
+      "hard_error_rate": 0.1918,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 8.2,
+      "p95_ms": 15.5,
+      "p99_ms": 38.0,
+      "p95_all_ms": 15.2
+    },
+    "get_student": {
+      "total": 567,
+      "success": 419,
+      "failed": 148,
+      "error_rate": 0.261,
+      "shed": 0,
+      "hard_failed": 148,
+      "hard_error_rate": 0.261,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 7.9,
+      "p95_ms": 13.1,
+      "p99_ms": 17.5,
+      "p95_all_ms": 12.6
+    },
+    "get_transcript": {
+      "total": 261,
+      "success": 194,
+      "failed": 67,
+      "error_rate": 0.2567,
+      "shed": 0,
+      "hard_failed": 67,
+      "hard_error_rate": 0.2567,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 14.2,
+      "p95_ms": 21.8,
+      "p99_ms": 24.0,
+      "p95_all_ms": 21.4
+    },
+    "post_grade": {
+      "total": 188,
+      "success": 136,
+      "failed": 52,
+      "error_rate": 0.2766,
+      "shed": 0,
+      "hard_failed": 52,
+      "hard_error_rate": 0.2766,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 9.4,
+      "p95_ms": 15.2,
+      "p99_ms": 29.6,
+      "p95_all_ms": 14.3
+    },
+    "post_payment": {
+      "total": 191,
+      "success": 145,
+      "failed": 46,
+      "error_rate": 0.2408,
+      "shed": 0,
+      "hard_failed": 46,
+      "hard_error_rate": 0.2408,
+      "recovered": 0,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 37.8,
+      "p95_ms": 44.0,
+      "p99_ms": 45.4,
+      "p95_all_ms": 43.4
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 0,
+    "ledger_mismatch_students": 0,
+    "ledger_mismatch_amount": 0.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 145,
+    "duplicate_academic_records": 0,
+    "academic_records": 136,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 0,
+    "missing_batches": 0,
+    "attack_rows": 0,
+    "audit_events": null,
+    "audit_deny_events": null,
+    "audit_broken_links": 0,
+    "violations": {},
+    "consistent": true
+  },
+  "consistent": true,
+  "stack_events": [],
+  "observations": [
+    "Baseline opens a new connection per request and has no retry: every request during the outage fails; it recovers by itself once the DB is back."
+  ],
+  "alerts": {
+    "false_alerts_before_fault": [],
+    "fired_after_fault": [
+      "DatabaseUnreachable",
+      "HighErrorRatio"
+    ],
+    "first_firing_after_fault_s": {
+      "DatabaseUnreachable": 3.26,
+      "HighErrorRatio": 5.26
+    },
+    "detection_by_alert_s": 3.26,
+    "timeline": [
+      {
+        "ts": 1794053966.746253,
+        "alert": "DatabaseUnreachable",
+        "state": "pending",
+        "rel_s": 1.26
+      },
+      {
+        "ts": 1794053967.7467139,
+        "alert": "HighErrorRatio",
+        "state": "pending",
+        "rel_s": 2.26
+      },
+      {
+        "ts": 1794053968.7471018,
+        "alert": "DatabaseUnreachable",
+        "state": "firing",
+        "rel_s": 3.26
+      },
+      {
+        "ts": 1794053970.7478352,
+        "alert": "HighErrorRatio",
+        "state": "firing",
+        "rel_s": 5.26
+      },
+      {
+        "ts": 1794053974.7509868,
+        "alert": "DatabaseUnreachable",
+        "state": "resolved",
+        "rel_s": 9.26
+      },
+      {
+        "ts": 1794053982.7569196,
+        "alert": "HighErrorRatio",
+        "state": "resolved",
+        "rel_s": 17.27
+      }
+    ]
+  },
+  "db_outage_s": 8.0,
+  "db_back_s": 8.22
+}

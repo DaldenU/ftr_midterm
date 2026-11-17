@@ -46,6 +46,7 @@ class Rec:
     payment_id: str = ""
     grade_key: str = ""
     shed: bool = False         # deliberate load shedding: 503 + Retry-After
+    request_id: str = ""       # client-generated X-Request-ID (trace id), known even if the request fails
 
     @property
     def ok(self) -> bool:
@@ -103,10 +104,17 @@ def summarize(recs: list[Rec]) -> dict:
 
 
 class Client:
-    """Thread-safe-ish helper: one httpx.Client per thread."""
+    """Thread-safe-ish helper: one httpx.Client per thread.
 
-    def __init__(self, base_url: str, timeout: float = 5.0, students: int = 50, seed: int | None = None):
+    ``security`` (a SecurityFixture) makes every request carry the JWT of a principal that is
+    legitimately allowed to perform it (the student for own records/payments, a random
+    faculty member for grades). In baseline/ft mode the header is simply not sent.
+    """
+
+    def __init__(self, base_url: str, timeout: float = 5.0, students: int = 50, seed: int | None = None,
+                 security=None):
         self.base_url, self.timeout, self.students = base_url, timeout, students
+        self.security = security
         self._tl = threading.local()
         self.rng = random.Random(seed)
         self._seq = 0
@@ -129,9 +137,19 @@ class Client:
     def sid(self) -> str:
         return f"S{self.rng.randint(1, self.students):04d}"
 
+    def auth_for(self, op: str, sid: str, rng: random.Random | None = None) -> dict:
+        if self.security is None:
+            return {}
+        if op in ("post_grade",):
+            return self.security.auth(f"FAC{(rng or self.rng).randint(1, 20):02d}")
+        if op in ("post_batch",):
+            return self.security.auth("REG01")
+        return self.security.auth(sid)
+
     # ---------------------------------------------------------------- one HTTP exchange
     def call(self, rec: Rec, method: str, path: str, **kw) -> Rec:
-        t = time.perf_counter()
+        rec.request_id = rec.request_id or uuid.uuid4().hex[:12]
+        kw["headers"] = {**(kw.get("headers") or {}), "X-Request-ID": rec.request_id}
         try:
             r = self.http().request(method, path, **kw)
             rec.status = r.status_code
@@ -160,22 +178,25 @@ class Client:
     # ---------------------------------------------------------------- operations
     def do_op(self, op: str, rec: Rec) -> Rec:
         n = self.next_id()
+        sid = self.sid()
+        h = self.auth_for(op, sid)
         if op == "get_student":
-            return self.call(rec, "GET", f"/students/{self.sid()}")
+            return self.call(rec, "GET", f"/students/{sid}", headers=h)
         if op == "get_transcript":
-            return self.call(rec, "GET", f"/students/{self.sid()}/transcript")
+            return self.call(rec, "GET", f"/students/{sid}/transcript", headers=h)
         if op == "get_account":
-            return self.call(rec, "GET", f"/accounts/{self.sid()}")
+            return self.call(rec, "GET", f"/accounts/{sid}", headers=h)
         if op == "post_payment":
             rec.logical_id = f"INV-{self.run_tag}-{n}"
-            body = {"student_id": self.sid(), "invoice_id": rec.logical_id, "amount": 1000.0}
-            return self.call(rec, "POST", "/payments", json=body, headers={"Idempotency-Key": f"key-{self.run_tag}-{n}"})
+            body = {"student_id": sid, "invoice_id": rec.logical_id, "amount": 1000.0}
+            return self.call(rec, "POST", "/payments", json=body,
+                             headers={"Idempotency-Key": f"key-{self.run_tag}-{n}", **h})
         if op == "post_grade":
-            sid = self.sid()
             course, term = f"C{self.run_tag}{n}", "2026F"
             rec.grade_key = f"{sid}|{course}|{term}"
             rec.logical_id = rec.grade_key
-            return self.call(rec, "POST", "/grades", json={"student_id": sid, "course_code": course, "term": term, "grade": 75.0})
+            return self.call(rec, "POST", "/grades", json={"student_id": sid, "course_code": course, "term": term, "grade": 75.0},
+                             headers=h)
         raise ValueError(op)
 
 
@@ -241,7 +262,7 @@ class Workload:
             rec = Rec(op=op, t0=time.time(), phase=self.phase)
             n = c.next_id()
             sid = f"S{rng.randint(1, c.students):04d}"
-            method, path, kw = "GET", "", {}
+            method, path, kw = "GET", "", {"headers": c.auth_for(op, sid, rng)}
             if op == "get_student":
                 path = f"/students/{sid}"
             elif op == "get_transcript":
@@ -252,12 +273,15 @@ class Workload:
                 rec.logical_id = f"INV-{c.run_tag}-{n}"
                 method, path = "POST", "/payments"
                 kw = dict(json={"student_id": sid, "invoice_id": rec.logical_id, "amount": 1000.0},
-                          headers={"Idempotency-Key": f"key-{c.run_tag}-{n}"})
+                          headers={"Idempotency-Key": f"key-{c.run_tag}-{n}", **kw["headers"]})
             else:
                 rec.grade_key = rec.logical_id = f"{sid}|C{c.run_tag}{n}|2026F"
                 method, path = "POST", "/grades"
-                kw = dict(json={"student_id": sid, "course_code": f"C{c.run_tag}{n}", "term": "2026F", "grade": 75.0})
+                kw = dict(json={"student_id": sid, "course_code": f"C{c.run_tag}{n}", "term": "2026F", "grade": 75.0},
+                          headers=kw["headers"])
             retry_after = 0.0
+            rec.request_id = uuid.uuid4().hex[:12]
+            kw["headers"] = {**(kw.get("headers") or {}), "X-Request-ID": rec.request_id}
             try:
                 async with ac.request(method, c.base_url + path, **kw) as r:
                     body = await r.read()

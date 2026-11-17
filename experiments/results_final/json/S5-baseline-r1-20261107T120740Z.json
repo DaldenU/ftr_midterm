@@ -1,0 +1,150 @@
+{
+  "experiment_id": "S5-baseline-r1-20261107T120740Z",
+  "scenario": "S5",
+  "repetition": 1,
+  "datetime": "2026-11-07T12:07:42+00:00",
+  "system_version": "baseline-1.0",
+  "mode": "baseline",
+  "failure_injected": "Interrupted transactions: payment interrupted after first write (30%), grade batch interrupted mid-way (30%), double-submitted payments (20%), abandoned payments",
+  "initial_state": {
+    "replicas_per_service": 1,
+    "db": "up",
+    "payments_planned": 60,
+    "batches_planned": 20
+  },
+  "failure_start": 1794053262.586,
+  "failure_start_rel_s": 0.01,
+  "detection_time_s": 0.094,
+  "detection_monitor_s": null,
+  "detection_internal_s": null,
+  "detection_client_s": 0.094,
+  "recovery_start": 1794053262.586,
+  "recovery_end": 1794053265.815,
+  "recovery_duration_s": 3.229,
+  "repair_action_s": 3.229,
+  "total_requests": 113,
+  "successful_requests": 87,
+  "failed_requests": 26,
+  "shed_requests": 0,
+  "hard_failed_requests": 26,
+  "recovered_requests": 33,
+  "degraded_requests": 0,
+  "duplicate_requests": 33,
+  "duplicates_prevented": 0,
+  "window_total": 113,
+  "window_failed": 26,
+  "window_success": 87,
+  "window_error_rate": 0.2301,
+  "user_visible_downtime_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "user_visible_downtime_strict_s": {
+    "student": 0,
+    "payment": 0,
+    "academic": 0
+  },
+  "probe_availability_strict": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "probe_availability_lenient": {
+    "student": 1.0,
+    "payment": 1.0,
+    "academic": 1.0
+  },
+  "latency": {
+    "p50_ms": 44.2,
+    "p95_ms": 101.9,
+    "p99_ms": 139.0
+  },
+  "per_op": {
+    "post_batch": {
+      "total": 26,
+      "success": 20,
+      "failed": 6,
+      "error_rate": 0.2308,
+      "shed": 0,
+      "hard_failed": 6,
+      "hard_error_rate": 0.2308,
+      "recovered": 6,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 26.5,
+      "p95_ms": 67.0,
+      "p99_ms": 81.6,
+      "p95_all_ms": 63.1
+    },
+    "post_payment": {
+      "total": 87,
+      "success": 67,
+      "failed": 20,
+      "error_rate": 0.2299,
+      "shed": 0,
+      "hard_failed": 20,
+      "hard_error_rate": 0.2299,
+      "recovered": 27,
+      "degraded": 0,
+      "replays": 0,
+      "p50_ms": 48.0,
+      "p95_ms": 103.3,
+      "p99_ms": 146.7,
+      "p95_all_ms": 104.6
+    }
+  },
+  "consistency": {
+    "duplicate_payments": 27,
+    "ledger_mismatch_students": 17,
+    "ledger_mismatch_amount": 20000.0,
+    "stuck_pending_payments": 0,
+    "rolled_back_payments": 0,
+    "completed_payments": 87,
+    "duplicate_academic_records": 12,
+    "academic_records": 112,
+    "lost_acknowledged_payments": 0,
+    "lost_acknowledged_grades": 0,
+    "partial_batches": 0,
+    "batches_with_duplicates": 6,
+    "missing_batches": 0,
+    "attack_rows": 0,
+    "audit_events": null,
+    "audit_deny_events": null,
+    "audit_broken_links": 0,
+    "violations": {
+      "duplicate_payments": 27,
+      "ledger_mismatch_students": 17,
+      "duplicate_academic_records": 12,
+      "batches_with_duplicates": 6
+    },
+    "consistent": false
+  },
+  "consistent": false,
+  "stack_events": [],
+  "observations": [
+    "Baseline commits payment row and ledger update separately and has no idempotency check: an interruption corrupts the ledger and the client's retry creates a second payment."
+  ],
+  "alerts": {
+    "false_alerts_before_fault": [],
+    "fired_after_fault": [],
+    "first_firing_after_fault_s": {},
+    "detection_by_alert_s": null,
+    "timeline": []
+  },
+  "logical_payments_planned": 60,
+  "logical_payments_acknowledged": 55,
+  "logical_batches_planned": 20,
+  "logical_batches_acknowledged": 20,
+  "interrupted_payments": 20,
+  "abandoned_payments": 5,
+  "double_submitted_payments": 12,
+  "interrupted_batches": 6,
+  "retry_recoveries_measured": 21,
+  "mean_client_recovery_s": 0.62,
+  "p95_client_recovery_s": 0.756,
+  "db_rollbacks": {
+    "avg_age_at_rollback_s": null,
+    "count": 0
+  }
+}

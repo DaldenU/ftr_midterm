@@ -7,7 +7,7 @@ import sys
 
 sys.path.insert(0, os.environ.get("FTLIB_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "shared")))
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Path
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
@@ -18,16 +18,32 @@ app, ctx = create_app("student-service", "Student Service")
 db, s = ctx.db, ctx.settings
 
 
-class StudentIn(BaseModel):
+class StudentInLoose(BaseModel):
     student_id: str | None = Field(None, description="Optional client-chosen id (used for seeding)")
     full_name: str = Field(..., min_length=1)
     email: str = Field(..., pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     program: str = "General"
 
 
+SID_RE = r"^S[0-9A-F]{4,8}$"
+
+
+class StudentInStrict(BaseModel):
+    """FT_MODE=final (C4): strict patterns - no markup/script characters, bounded lengths."""
+    student_id: str | None = Field(None, pattern=SID_RE)
+    full_name: str = Field(..., min_length=1, max_length=100, pattern=r"^[^<>{}\\;\"`]+$")
+    email: str = Field(..., max_length=254, pattern=r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+    program: str = Field("General", max_length=40, pattern=r"^[A-Za-z0-9 ._-]+$")
+
+
+StudentIn = StudentInStrict if s.is_secure else StudentInLoose
+SID_PATH = Path(..., pattern=SID_RE) if s.is_secure else Path(...)
+
+
 @app.post("/students", status_code=201, tags=["students"], summary="Register a student")
 def register_student(body: StudentIn):
     import uuid
+    ctx.require("student:write")
     sid = body.student_id or "S" + uuid.uuid4().hex[:8].upper()
 
     if s.is_ft:
@@ -38,6 +54,7 @@ def register_student(body: StudentIn):
                 "INSERT INTO student.students(student_id, full_name, email, program) VALUES (%s,%s,%s,%s) "
                 "ON CONFLICT DO NOTHING RETURNING *", (sid, body.full_name, body.email, body.program)).fetchone()
             if row:
+                ctx.audit_in_tx(conn, "student:write", f"/students/{sid}", 201, f"registered {sid}")
                 return row, False
             row = conn.execute("SELECT * FROM student.students WHERE email=%s OR student_id=%s",
                                (body.email, sid)).fetchone()
@@ -65,7 +82,9 @@ def register_student(body: StudentIn):
 
 
 @app.get("/students/{student_id}", tags=["students"], summary="Look up a student")
-def get_student(student_id: str):
+def get_student(student_id: str = SID_PATH):
+    ctx.require("student:read", student_id)
+
     def op(conn):
         return conn.execute("SELECT * FROM student.students WHERE student_id=%s", (student_id,)).fetchone()
 

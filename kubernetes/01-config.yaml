@@ -5,8 +5,13 @@ metadata:
   name: uni-config
   namespace: uni
 data:
-  FT_MODE: "ft"
-  ENABLE_FAULT_INJECTION: "1"          # set to "0" outside of experiments
+  FT_MODE: "final"
+  ENABLE_FAULT_INJECTION: "0"          # "1" only in a test namespace used for fault-injection experiments
+  RATE_LIMIT_RPS: "50"
+  RATE_LIMIT_BURST: "100"
+  MAX_BODY_BYTES: "16384"
+  USERS_FILE: "/run/secrets/uis/users.json"
+  PYTHONDONTWRITEBYTECODE: "1"
   HTTP_TIMEOUT_S: "1.0"
   RETRY_ATTEMPTS: "3"
   DOWNSTREAM_DEADLINE_S: "2.0"

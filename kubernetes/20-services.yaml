@@ -34,6 +34,9 @@ spec:
           env:
             - {name: INSTANCE_ID, valueFrom: {fieldRef: {fieldPath: metadata.name}}}
             - {name: DATABASE_URL, valueFrom: {secretKeyRef: {name: uni-secrets, key: DATABASE_URL}}}
+            - {name: JWT_SECRET, valueFrom: {secretKeyRef: {name: uni-secrets, key: JWT_SECRET}}}
+            - {name: INTERNAL_AUTH_SECRET, valueFrom: {secretKeyRef: {name: uni-secrets, key: INTERNAL_AUTH_SECRET}}}
+            - {name: ADMIN_TOKEN, valueFrom: {secretKeyRef: {name: uni-secrets, key: ADMIN_TOKEN}}}
           readinessProbe:               # failing readiness removes the pod from the gateway's healthy set
             httpGet: {path: /ready, port: 8000}
             periodSeconds: 2
@@ -44,6 +47,8 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 3
+          securityContext: {runAsNonRoot: true, runAsUser: 10001, allowPrivilegeEscalation: false,
+                            readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           resources:
             requests: {cpu: 100m, memory: 128Mi}
             limits: {cpu: 500m, memory: 256Mi}
@@ -91,6 +96,9 @@ spec:
           env:
             - {name: INSTANCE_ID, valueFrom: {fieldRef: {fieldPath: metadata.name}}}
             - {name: DATABASE_URL, valueFrom: {secretKeyRef: {name: uni-secrets, key: DATABASE_URL}}}
+            - {name: JWT_SECRET, valueFrom: {secretKeyRef: {name: uni-secrets, key: JWT_SECRET}}}
+            - {name: INTERNAL_AUTH_SECRET, valueFrom: {secretKeyRef: {name: uni-secrets, key: INTERNAL_AUTH_SECRET}}}
+            - {name: ADMIN_TOKEN, valueFrom: {secretKeyRef: {name: uni-secrets, key: ADMIN_TOKEN}}}
           readinessProbe:               # failing readiness removes the pod from the gateway's healthy set
             httpGet: {path: /ready, port: 8000}
             periodSeconds: 2
@@ -101,6 +109,8 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 3
+          securityContext: {runAsNonRoot: true, runAsUser: 10001, allowPrivilegeEscalation: false,
+                            readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           resources:
             requests: {cpu: 100m, memory: 128Mi}
             limits: {cpu: 500m, memory: 256Mi}
@@ -148,6 +158,9 @@ spec:
           env:
             - {name: INSTANCE_ID, valueFrom: {fieldRef: {fieldPath: metadata.name}}}
             - {name: DATABASE_URL, valueFrom: {secretKeyRef: {name: uni-secrets, key: DATABASE_URL}}}
+            - {name: JWT_SECRET, valueFrom: {secretKeyRef: {name: uni-secrets, key: JWT_SECRET}}}
+            - {name: INTERNAL_AUTH_SECRET, valueFrom: {secretKeyRef: {name: uni-secrets, key: INTERNAL_AUTH_SECRET}}}
+            - {name: ADMIN_TOKEN, valueFrom: {secretKeyRef: {name: uni-secrets, key: ADMIN_TOKEN}}}
           readinessProbe:               # failing readiness removes the pod from the gateway's healthy set
             httpGet: {path: /ready, port: 8000}
             periodSeconds: 2
@@ -158,6 +171,8 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 3
+          securityContext: {runAsNonRoot: true, runAsUser: 10001, allowPrivilegeEscalation: false,
+                            readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           resources:
             requests: {cpu: 100m, memory: 128Mi}
             limits: {cpu: 500m, memory: 256Mi}

@@ -23,6 +23,10 @@ class RequestState:
     replay: bool = False        # response replays an earlier idempotent result
     error: str = ""
     extra: dict = field(default_factory=dict)
+    span_id: str = ""           # this hop (request_id doubles as the trace id)
+    parent_span_id: str = ""    # caller's span (gateway or calling service)
+    principal: object = None    # security.Principal in FT_MODE=final
+    security_event: str = ""    # e.g. "deny:bola" - copied into the access log
 
 
 _state_var: contextvars.ContextVar[RequestState | None] = contextvars.ContextVar("req_state", default=None)

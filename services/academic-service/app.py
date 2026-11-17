@@ -5,7 +5,7 @@ import uuid
 
 sys.path.insert(0, os.environ.get("FTLIB_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "shared")))
 
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Path, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -22,16 +22,30 @@ if student_client:
     ctx.clients["student-service"] = student_client
 
 
-class GradeIn(BaseModel):
+class GradeInLoose(BaseModel):
     student_id: str
     course_code: str
     term: str
     grade: float = Field(..., ge=0, le=100)
 
 
+class GradeInStrict(BaseModel):
+    """FT_MODE=final (C4)."""
+    student_id: str = Field(..., pattern=r"^S[0-9A-F]{4,8}$")
+    course_code: str = Field(..., pattern=r"^[A-Za-z0-9-]{2,24}$")
+    term: str = Field(..., pattern=r"^[0-9]{4}[A-Z]$")
+    grade: float = Field(..., ge=0, le=100)
+
+
+GradeIn = GradeInStrict if s.is_secure else GradeInLoose
+
+
 class BatchIn(BaseModel):
-    batch_id: str | None = None
-    records: list[GradeIn] = Field(..., min_length=1)
+    batch_id: str | None = Field(None, pattern=r"^[A-Za-z0-9-]{1,40}$") if s.is_secure else None
+    records: list[GradeIn] = Field(..., min_length=1, max_length=200) if s.is_secure else Field(..., min_length=1)
+
+
+SID_PATH = Path(..., pattern=r"^S[0-9A-F]{4,8}$") if s.is_secure else Path(...)
 
 
 _INSERT_FT = ("INSERT INTO academic.records(student_id, course_code, term, grade, batch_id) "
@@ -43,11 +57,14 @@ _SELECT = "SELECT * FROM academic.records WHERE student_id=%s AND course_code=%s
 
 @app.post("/grades", status_code=201, tags=["academic"], summary="Record a grade")
 def post_grade(g: GradeIn):
+    ctx.require("grade:write")
     args = (g.student_id, g.course_code, g.term, g.grade, None)
     if s.is_ft:
         def op(conn):
             row = conn.execute(_INSERT_FT, args).fetchone()
             if row:
+                ctx.audit_in_tx(conn, "grade:write", f"/grades/{g.student_id}/{g.course_code}/{g.term}", 201,
+                                f"grade={g.grade}")
                 return row, False
             return conn.execute(_SELECT, args[:3]).fetchone(), True
 
@@ -66,6 +83,7 @@ def post_grade(g: GradeIn):
 @app.post("/grades/batch", status_code=201, tags=["academic"],
           summary="Record several grades (e.g. a whole class) as one unit")
 def post_batch(b: BatchIn, request: Request):
+    ctx.require("grade:batch")
     fault = request.headers.get("x-fault")
     batch_id = b.batch_id or "B" + uuid.uuid4().hex[:8]
     half = max(1, len(b.records) // 2)
@@ -80,6 +98,8 @@ def post_batch(b: BatchIn, request: Request):
                     ctx.maybe_fault(fault, "mid_batch")
                 row = conn.execute(_INSERT_FT, (g.student_id, g.course_code, g.term, g.grade, batch_id)).fetchone()
                 inserted += 1 if row else 0
+            if inserted:
+                ctx.audit_in_tx(conn, "grade:batch", f"/grades/batch/{batch_id}", 201, f"{inserted} records")
             return inserted
 
         inserted = db.run(op)
@@ -104,7 +124,8 @@ def post_batch(b: BatchIn, request: Request):
 
 
 @app.get("/students/{student_id}/transcript", tags=["academic"], summary="Transcript with student details")
-def transcript(student_id: str, request: Request):
+def transcript(request: Request, student_id: str = SID_PATH):
+    ctx.require("transcript:read", student_id)
     rid = current_state().request_id
 
     def op(conn):

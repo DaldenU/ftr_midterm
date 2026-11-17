@@ -22,6 +22,8 @@ class Metrics:
         self.degraded = Counter("degraded_responses_total", "Responses served in degraded mode", lbl + ["reason"], registry=self.registry)
         self.shed = Counter("load_shed_total", "Requests rejected by load shedding", lbl, registry=self.registry)
         self.replays = Counter("idempotent_replays_total", "Duplicate requests answered from stored result", lbl, registry=self.registry)
+        self.security_events = Counter("security_events_total", "Security-relevant events (denials, auth failures)", lbl + ["type"], registry=self.registry)
+        self.audit_records = Counter("audit_records_total", "Hash-chained audit records written", lbl + ["outcome"], registry=self.registry)
         self.inflight = Gauge("inflight_requests", "Requests currently in flight", lbl, registry=self.registry)
         self.up.labels(service, instance).set(1)
         self.db_up.labels(service, instance).set(1)

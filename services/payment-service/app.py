@@ -28,7 +28,7 @@ import uuid
 sys.path.insert(0, os.environ.get("FTLIB_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "shared")))
 
 import psycopg
-from fastapi import Header, HTTPException, Request
+from fastapi import Header, HTTPException, Path, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -45,11 +45,24 @@ if student_client:
 ctx.notes.update({"rollbacks": 0, "resumed": 0, "verified_late": 0, "compensated": 0})
 
 
-class PaymentIn(BaseModel):
+class PaymentInLoose(BaseModel):
     student_id: str
     invoice_id: str = Field(..., min_length=1)
     amount: float = Field(..., gt=0)
     currency: str = Field("KZT", min_length=3, max_length=3)
+
+
+class PaymentInStrict(BaseModel):
+    """FT_MODE=final (C4): identifiers restricted to safe alphabets, amount bounded."""
+    student_id: str = Field(..., pattern=r"^S[0-9A-F]{4,8}$")
+    invoice_id: str = Field(..., min_length=1, max_length=40, pattern=r"^[A-Za-z0-9-]+$")
+    amount: float = Field(..., gt=0, le=50_000_000)
+    currency: str = Field("KZT", pattern=r"^[A-Z]{3}$")
+
+
+PaymentIn = PaymentInStrict if s.is_secure else PaymentInLoose
+KEY_RE = r"^[A-Za-z0-9_-]{1,64}$"
+SID_PATH = Path(..., pattern=r"^S[0-9A-F]{4,8}$") if s.is_secure else Path(...)
 
 
 _LEDGER_UPSERT = ("INSERT INTO payment.accounts(student_id, total_paid) VALUES (%s,%s) "
@@ -80,7 +93,9 @@ def _verify_student(student_id: str, rid: str) -> bool:
 
 # ----------------------------------------------------------------------------- create
 @app.post("/payments", status_code=201, tags=["payments"], summary="Pay tuition (idempotent)")
-def create_payment(body: PaymentIn, request: Request, idempotency_key: str | None = Header(None)):
+def create_payment(body: PaymentIn, request: Request,
+                   idempotency_key: str | None = Header(None, pattern=KEY_RE) if s.is_secure else Header(None)):
+    ctx.require("payment:create", body.student_id)          # C2: students may only pay their own invoices
     fault = request.headers.get("x-fault")
     rid = current_state().request_id
     return _create_ft(body, idempotency_key, fault, rid) if s.is_ft else _create_baseline(body, idempotency_key, fault, rid)
@@ -153,6 +168,8 @@ def _complete(pid: str, student_id: str, amount: float) -> dict:
         if row is None:                                   # somebody else completed / rolled it back
             return conn.execute("SELECT * FROM payment.payments WHERE payment_id=%s", (pid,)).fetchone()
         conn.execute(_LEDGER_UPSERT, (student_id, amount))
+        ctx.audit_in_tx(conn, "payment:create", f"/payments/{pid}", 201,
+                        f"student={student_id} invoice={row['invoice_id']} amount={amount}")   # C6, same transaction
         return row
 
     row = db.run(op)
@@ -164,6 +181,11 @@ def _complete(pid: str, student_id: str, amount: float) -> dict:
 def _existing(row: dict, body: PaymentIn, fault):
     """A payment with this Idempotency-Key already exists: replay, resume or reject."""
     if (row["student_id"], row["invoice_id"], float(row["amount"])) != (body.student_id, body.invoice_id, body.amount):
+        if s.is_secure:   # C4: payload binding - a replayed key with a modified body is a tampering attempt
+            ctx.security_event("deny:idempotency_tamper")
+            ctx.audit_deny_blocking("payment:create", f"/payments key={row['idempotency_key']}", 409,
+                                    f"body differs from stored request (amount {row['amount']} vs {body.amount})")
+            raise HTTPException(409, "Idempotency-Key was already used with a different request body")
         raise HTTPException(422, "Idempotency-Key was already used with a different request body")
     st = current_state()
     if row["status"] == "COMPLETED":
@@ -201,12 +223,16 @@ def get_payment(payment_id: str):
         return conn.execute("SELECT * FROM payment.payments WHERE payment_id=%s", (payment_id,)).fetchone()
     row = db.run(op, deadline=2.0) if s.is_ft else db.run(op)
     if not row:
+        ctx.require("payment:read", None)       # do not reveal existence to callers without the base permission
         raise HTTPException(404, "payment not found")
+    ctx.require("payment:read", row["student_id"])
     return jsonable_encoder(row)
 
 
 @app.get("/accounts/{student_id}", tags=["payments"], summary="Total paid by a student (ledger)")
-def get_account(student_id: str):
+def get_account(student_id: str = SID_PATH):
+    ctx.require("account:read", student_id)
+
     def op(conn):
         return conn.execute("SELECT total_paid FROM payment.accounts WHERE student_id=%s", (student_id,)).fetchone()
     row = db.run(op, deadline=2.0) if s.is_ft else db.run(op)
